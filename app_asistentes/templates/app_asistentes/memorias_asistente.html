@@ -1,0 +1,29 @@
+{% extends 'dashboard_principal_asistente.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <h1 class="contenedor text-center">📚 Memorías: {{ evento.eve_nombre }}</h1>
+  <div class="row row-cols-1 row-cols-md-2 g-3">
+    {% for m in memorias %}
+      <div class="col ">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ m.nombre }}</h5>
+            <p class="text-muted small">Subido: {{ m.subido_en|date:"Y-m-d H:i" }}</p>
+            <a href="{{ m.archivo.url }}" class="btn btn-success" download>
+              <i class="bi bi-download me-1"></i> Descargar
+            </a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted text-center mx-5">No hay memorias disponibles.</p>
+    {% endfor %}
+  </div>
+        <div class="text-start pt-5">
+            <a href="{% url 'dashboard_asistente' %}" class="btn btn-outline-secondary mt-3">Volver al inicio</a>
+        </div>
+</div>
+{% endblock %}
+

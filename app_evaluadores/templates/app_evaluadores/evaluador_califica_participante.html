@@ -1,0 +1,432 @@
+{% extends 'dashboard_principal_evaluador.html' %}
+{% load static %}
+
+{% block title %}Calificar {% if es_grupo %}Grupo{% else %}Participante{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    {% if es_grupo %}
+                        <h1 class="h3 text-primary fw-bold mb-1">
+                            <i class="fas fa-users me-2"></i>Evaluación de Grupo
+                        </h1>
+                        <p class="text-muted mb-0">Líder: {{ participante.usuario.first_name }} {{ participante.usuario.last_name }}</p>
+                    {% else %}
+                        <h1 class="h3 text-primary fw-bold mb-1">
+                            <i class="fas fa-user me-2"></i>Evaluación Individual
+                        </h1>
+                        <p class="text-muted mb-0">{{ participante.usuario.first_name }} {{ participante.usuario.last_name }}</p>
+                    {% endif %}
+                </div>
+                <div class="text-end">
+                    <h4 class=" caja-mv">{{ evento.eve_nombre }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="calificacionForm">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Left Column - Participant Info -->
+            <div class="col-lg-4 mb-4">
+                <!-- Participant Card -->
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-gradient-primary text-white border-0">
+                        <h5 class="card-title mb-0">
+                            <i class="{% if es_grupo %}fas fa-user-tie{% else %}fas fa-user{% endif %} me-2"></i>
+                            {% if es_grupo %}Líder del Proyecto{% else %}Participante{% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <div class="avatar-circle bg-primary text-white mx-auto mb-2">
+                                {{ participante.usuario.first_name.0 }}{{ participante.usuario.last_name.0 }}
+                            </div>
+                            <h5 class="fw-bold text-dark mb-1">
+                                {{ participante.usuario.first_name }} {{ participante.usuario.last_name }}
+                            </h5>
+                            <p class="text-muted mb-0">CC: {{ participante.id }}</p>
+                            {% if es_grupo %}
+                                <span class="badge bg-warning text-dark mt-2">
+                                    <i class="fas fa-code me-1"></i>{{ codigo_proyecto }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if es_grupo %}
+                            <div class="border-top pt-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Miembros del grupo:</span>
+                                    <span class="badge bg-secondary">{{ miembros_grupo|length }}</span>
+                                </div>
+                                
+                                <div class="members-list">
+                                    {% for miembro in miembros_grupo %}
+                                        <div class="member-item {% if not miembro.par_eve_proyecto_principal %}leader-highlight{% endif %}">
+                                            <div class="d-flex align-items-center">
+                                                <div class="member-avatar">
+                                                    {% if not miembro.par_eve_proyecto_principal %}
+                                                        <i class="fas fa-crown text-warning"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-user text-secondary"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="ms-2 flex-grow-1">
+                                                    <div class="fw-medium text-sm">
+                                                        {{ miembro.par_eve_participante_fk.usuario.first_name }} {{ miembro.par_eve_participante_fk.usuario.last_name }}
+                                                    </div>
+                                                    <div class="text-muted text-xs">
+                                                        CC: {{ miembro.par_eve_participante_fk.id }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="alert alert-info border-0 mt-3 mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <small>La calificación se aplicará a todos los miembros</small>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Evaluation Form -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-success text-white border-0">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-star me-2"></i>Criterios de Evaluación
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 evaluation-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="border-0 ps-4">Criterio de Evaluación</th>
+                                        <th class="border-0 text-center" style="width: 120px;">Peso</th>
+                                        <th class="border-0 text-center" style="width: 200px;">Calificación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for criterio in criterios %}
+                                    <tr class="criterio-row">
+                                        <td class="ps-4 py-3">
+                                            <div class="criterio-info">
+                                                <h6 class="mb-1 fw-bold text-dark">{{ criterio.cri_descripcion }}</h6>
+                                                <small class="text-muted">Evalúe según este criterio específico</small>
+                                            </div>
+                                        </td>
+                                        <td class="text-center py-3">
+                                            <span class="badge bg-info fs-6 px-3 py-2">{{ criterio.cri_peso }}%</span>
+                                        </td>
+                                        <td class="text-center py-3">
+                                            <div class="rating-input-container">
+                                                <div class="input-group input-group-lg justify-content-center">
+                                                    <input type="number" 
+                                                           class="form-control form-control-lg rating-input text-center fw-bold" 
+                                                           id="calificacion_{{ criterio.id }}" 
+                                                           name="calificacion_{{ criterio.id }}" 
+                                                           min="1" 
+                                                           max="10" 
+                                                           placeholder="0"
+                                                           required>
+                                                    <span class="input-group-text bg-primary text-white border-primary">/10</span>
+                                                </div>
+                                                <div class="rating-scale mt-1">
+                                                    <small class="text-muted">1-10</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Summary Section -->
+                        <div class="bg-light border-top p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <div class="evaluation-summary">
+                                        <h6 class="text-muted mb-2">Resumen de Evaluación</h6>
+                                        <div class="d-flex align-items-center">
+                                            <span class="text-muted me-2">Promedio estimado:</span>
+                                            <span id="promedioCalculado" class="fw-bold text-primary fs-5">--</span>
+                                            <span class="text-muted ms-1">/10</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <div class="action-buttons">
+                                        <a href="{% url 'calificar_participantes' evento.id %}" 
+                                           class="btn btn-outline-secondary me-2">
+                                            <i class="fas fa-arrow-left me-1"></i>Cancelar
+                                        </a>
+                                        <button type="submit" class="btn btn-success btn-lg px-4">
+                                            <i class="fas fa-save me-2"></i>
+                                            Guardar Evaluación
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div>
+        <a href="{% url 'calificar_participantes' evento.id %}" class="btn btn-secondary mt-4">
+            <i class="fas fa-home me-1"></i>Volver a la Lista de Participantes
+        </a>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color), #0b5ed7);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, var(--success-color), #157347);
+}
+
+.card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1.25rem 1.5rem;
+}
+
+.avatar-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.member-item {
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+    border: 1px solid #e9ecef;
+}
+
+.member-item:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.leader-highlight {
+    background: linear-gradient(135deg, #fff3cd, #fef7e0);
+    border-color: #ffc107;
+}
+
+.member-avatar {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+}
+
+.text-sm {
+    font-size: 0.9rem;
+}
+
+.text-xs {
+    font-size: 0.8rem;
+}
+
+.evaluation-table {
+    font-size: 0.95rem;
+}
+
+.criterio-row {
+    border-bottom: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+}
+
+.criterio-row:hover {
+    background-color: #f8f9fa;
+}
+
+.criterio-row:last-child {
+    border-bottom: none;
+}
+
+.rating-input {
+    width: 80px !important;
+    border-color: #dee2e6;
+    font-size: 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.rating-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    transform: scale(1.05);
+}
+
+.rating-input:valid {
+    border-color: var(--success-color);
+}
+
+.rating-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.evaluation-summary {
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 2px dashed #dee2e6;
+}
+
+.btn {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.alert {
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.badge {
+    border-radius: 6px;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+    
+    .rating-input {
+        width: 70px !important;
+        font-size: 1rem;
+    }
+    
+    .evaluation-table {
+        font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+    
+    .btn {
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('.rating-input');
+    const promedioSpan = document.getElementById('promedioCalculado');
+    
+    function calcularPromedio() {
+        let valores = [];
+        let todosLlenos = true;
+        
+        inputs.forEach(input => {
+            const valor = parseInt(input.value);
+            if (valor >= 1 && valor <= 10) {
+                valores.push(valor);
+            } else {
+                todosLlenos = false;
+            }
+        });
+        
+        if (valores.length > 0 && todosLlenos) {
+            const promedio = valores.reduce((a, b) => a + b, 0) / valores.length;
+            promedioSpan.textContent = promedio.toFixed(1);
+            promedioSpan.className = 'fw-bold fs-5 ' + (promedio >= 7 ? 'text-success' : promedio >= 5 ? 'text-warning' : 'text-danger');
+        } else {
+            promedioSpan.textContent = '--';
+            promedioSpan.className = 'fw-bold text-primary fs-5';
+        }
+    }
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', calcularPromedio);
+        input.addEventListener('change', calcularPromedio);
+    });
+    
+    // Validación del formulario
+    document.getElementById('calificacionForm').addEventListener('submit', function(e) {
+        let todosValidos = true;
+        
+        inputs.forEach(input => {
+            const valor = parseInt(input.value);
+            if (!valor || valor < 1 || valor > 10) {
+                todosValidos = false;
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!todosValidos) {
+            e.preventDefault();
+            alert('Por favor, complete todas las calificaciones con valores entre 1 y 10.');
+        }
+    });
+    
+    // Animación de entrada
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+});
+</script>
+{% endblock %}

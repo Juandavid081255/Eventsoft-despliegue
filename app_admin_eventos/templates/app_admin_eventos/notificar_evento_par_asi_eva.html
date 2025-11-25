@@ -1,0 +1,37 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Notificaciones{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">Notificaciones</h2>
+
+    {% block notificaciones %}
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-2">
+            <a href="{% url 'notificar_asi' evento.id %}" class="btn btn-outline-success mb-3">Notificar a Asistentes</a>
+        </div>
+
+        <div class="col-md-2">
+            <a href="{% url 'notificar_par' evento.id %}" class="btn btn-outline-success mb-3">Notificar a Participantes</a>
+        </div>
+       
+        <div class="col-md-2">
+            <a href="{% url 'notificar_eva' evento.id %}" class="btn btn-outline-success mb-3">Notificar a Evaluadores</a>
+        </div>
+    </div>
+    {% endblock notificaciones %}
+    
+
+    {% block notificar %}
+    
+    {% endblock notificar %}
+
+    <button type="button" class="btn btn-secondary mt-5" onclick="window.history.back()">
+        ← Volver atrás
+    </button>
+
+    
+</div>
+{% endblock %}

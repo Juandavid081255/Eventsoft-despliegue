@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}">🟢 Administración Super Usuario </a>
+</h1>
+{% endblock %}
+
+{% block usertools %}
+  {{ block.super }}
+  
+  <!-- 🔹 Enlaces personalizados del SuperAdmin -->
+  <div class="custom-links" style="margin-left: 15px; display: inline-block;">
+    <!-- Enviar invitación -->
+    <a href="{% url 'enviar_invitacion' %}" target="_blank" style="color: #fff; text-decoration: none; margin-right: 10px;">
+       📌 Invitar Admin Eventos
+    </a>
+    |
+    <!-- Ver manual PDF -->
+    <a href="{% static 'manuales/super_admin.pdf' %}" target="_blank" style="color: #fff; text-decoration: none; margin-left: 10px;">
+      📘 Ver Manual
+    </a>
+  </div>
+{% endblock %}

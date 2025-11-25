@@ -1,0 +1,38 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Crear Categoría{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 contenedor">Crear Nueva Categoría</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="p-4 mb-3 shadow-sm caja-mv rounded">
+            <div class="form-group mb-3 ">
+                <label for="id_cat_area_fk">Área</label>
+                {{ form.cat_area_fk }}
+            </div>
+            <div class="form-group mb-3">
+                <label for="id_cat_nombre">Nombre de la Categoría</label>
+                {{ form.cat_nombre }}
+            </div>
+            <div class="form-group mb-3">
+                <label for="id_cat_descripcion">Descripción de la Categoría</label>
+                {{ form.cat_descripcion }}
+            </div>
+            <div>
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a href="{% url 'lista_categorias' %}" class="btn btn-info">Ver lista de categorías</a>
+            </div>
+        </div>
+
+        
+    </form>
+    <button type="button" class="btn btn-secondary mt-5" onclick="window.history.back()">
+        ← Volver atrás
+    </button>
+</div>
+{% endblock %}

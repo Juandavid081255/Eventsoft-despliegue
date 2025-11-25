@@ -1,0 +1,131 @@
+
+
+{% extends 'base.html' %}
+
+{% block title %}Crear Asistente{% endblock %}
+
+{% block content %}
+
+
+<div class="container mt-5 mb-5">
+
+    
+    {% if evento.eve_tienecosto == 'De pago' %}
+    <h2 class = "contenedor">Formulario de preinscripción de asistente</h2>
+    {% else %}
+    <h2 class = "contenedor">Formulario de inscripción de asistente</h2>
+    {% endif %}
+
+    <div class="row px-5">
+        <div class="card contenedor col-2">
+            <img src="{{ evento.eve_imagen.url }}" alt="Imagen del Evento" class="img-fluid rounded mx-auto d-block evento-img" style="max-width: 100%; height: auto;">
+            
+        </div>
+        <div class="col-8 pt-5">
+            <h4 class="text-center pt-4"><strong>{{ evento.eve_nombre}}</strong></h4>
+            <p class="pt-4">{{evento.eve_descripcion}}</p>
+        </div>
+    </div>
+    <hr>
+
+
+    <div class=" mb-5 text-center">
+        {% if evento.eve_capacidad > 0 %}
+            <p><strong>Cupos disponibles:</strong> {{ evento.eve_capacidad }}</p>
+        {% else %}
+            <p class="text-danger"><strong>No hay cupos disponibles para este evento.</strong></p>
+        {% endif %}
+    </div>
+
+
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <div class="row -12">
+            <div class="col mb-3">
+                <label for="{{ form.cedula.id_for_label }}" class="form-label">Cédula</label>
+                {{ form.cedula}}
+                {% if form.cedula.errors %}
+                    <div class="text-danger">
+                        {{ form.cedula.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Nombre de usuario</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="text-danger">
+                        {{ form.username.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col mb-3">
+                <label for="{{ form.email.id_for_label }}" class="form-label">Correo electrónico</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="row -12">
+            <div class="col mb-3">
+                <label for="{{ form.telefono.id_for_label }}" class="form-label">Teléfono</label>
+                {{ form.telefono }}
+                {% if form.telefono.errors %}
+                    <div class="text-danger">
+                        {{ form.telefono.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col mb-3">
+                <label for="{{ form.first_name.id_for_label }}" class="form-label">Nombre</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger">
+                        {{ form.first_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col mb-3">
+                <label for="{{ form.last_name.id_for_label }}" class="form-label">Apellido</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger">
+                        {{ form.last_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+
+
+        {% if es_de_pago %}
+            <div class="mb-3">
+                <label for="asi_eve_soporte" class="form-label">Comprobante de pago</label>
+                <input type="file" name="asi_eve_soporte" class="form-control" accept=".jpg,.jpeg,.png,.gif">
+            </div>
+            <div class="mb-3">
+                <img id="preview_imagen" src="{{ form.instance.asi_eve_soporte.url }}" alt="Vista previa de la imagen" style="max-width: 300px; margin-top: 10px;">
+            </div>
+        {% endif %}
+        <br>
+        <br>
+
+        <div class=" mt-5  text-center">
+            <button type="submit" class="btn btn-success">Enviar Registro</button>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

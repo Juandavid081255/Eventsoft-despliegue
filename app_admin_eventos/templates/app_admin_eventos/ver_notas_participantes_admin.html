@@ -1,0 +1,56 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Podio de Participantes{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">PODIO PARTICIPANTES</h2>
+
+    <!-- Verificación de si hay participantes calificados -->
+    {% if participantes %}
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr class="table-warning text-center"  >
+                        <th>Puesto #</th>
+                        <th>Nombre del Participante</th>
+                        <th>Calificación</th>
+                        <th>Ver notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for participante in participantes %}
+                        <tr>
+                            <td>
+                                {% if forloop.counter == 1 %}
+                                    <span class="badge badge-warning">🥇</span>
+                                {% elif forloop.counter == 2 %}
+                                    <span class="badge badge-secondary">🥈</span>
+                                {% elif forloop.counter == 3 %}
+                                    <span class="badge badge-bronze">🥉</span>
+                                {% else %}
+                                    {{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td>{{ participante.par_eve_participante_fk.usuario.first_name }} {{ participante.par_eve_participante_fk.usuario.last_name }}</td>
+                            <td>{{ participante.calificacion }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'ver_detalle_calificacion_admin' evento.id participante.par_eve_participante_fk.id %}" class="btn btn-success">
+                                    Ver detalle
+                                </a>
+                            </td>
+
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No hay participantes calificados para este evento.</p>
+    {% endif %}
+    <div class="text-start pt-5">
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+</div>
+
+{% endblock %}

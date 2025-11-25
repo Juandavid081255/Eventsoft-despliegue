@@ -1,0 +1,193 @@
+{% extends 'validaciones_par_asi_eva.html' %}
+{% load static %}
+
+{% block title %}Validación Asistentes{% endblock %}
+
+{% block validar %}
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        padding: 5px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        text-align: center;
+    }
+
+    .thumbnail {
+        max-width: 20%;
+        max-height: 20%;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .thumbnail:hover {
+        opacity: 0.8;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        padding-top: 5%;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.75);
+    }
+
+    .modal-content {
+        margin: auto;
+        display: block;
+        height: 80%;
+        width: auto;
+        border-radius: 8px;
+        box-shadow: 0 0 10px #333;
+    }
+
+
+    .close {
+        position: absolute;
+        top: 20px;
+        right: 40px;
+        color: #fff;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1001;
+    }
+</style>
+
+<div class="container mt-5 pt-2">
+    <h2 class="text-center p-5">Asistentes Preinscritos al Evento: {{ evento.eve_nombre }}</h2>
+    <form method="get">
+        <div class="row mx-5 mt-3">
+            <div class="col mb-4">
+                <input type="text" name="query" class="form-control" placeholder="Buscar por cédula o nombre" value="{{ query }}">
+            </div>
+
+            <div class="col mb-4">
+                <select name="estado" class="form-control">
+                    <option value="">Buscar por estado</option>
+                    <option value="Pendiente" {% if estado == "Pendiente" %}selected{% endif %}>Pendiente</option>
+                    <option value="Aprobado" {% if estado == "Aprobado" %}selected{% endif %}>Aprobado</option>
+                    <option value="Rechazado" {% if estado == "Rechazado" %}selected{% endif %}>Rechazado</option>
+                </select>
+            </div>
+
+            <div class="justify-content-center">
+                <button type="submit" class="btn btn-success">Filtrar</button>
+                <a href="?" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </div>
+    </form>
+</div>
+<hr>
+
+<table>
+    <thead>
+        <tr>
+            <th>Cédula</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Correo</th>
+            <th>Telefono</th>
+            <th>Ver soporte</th>
+            <th>Ver QR</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for asi in asistentes %}
+            <tr>
+                <td>{{ asi.cedula }}</td>
+                <td>{{ asi.nombre }}</td>
+                <td>{{ asi.apellido }}</td>
+                <td>{{ asi.correo }}</td>
+                <td>{{ asi.telefono }}</td>
+                <td class="text-cernter">
+                    {% if asi.soporte %}
+                        <img src="{{ asi.soporte.url }}" alt="Documento" class="thumbnail"  onclick="showModal(this)">
+                    {% else %}
+                        No aportado
+                    {% endif %}
+                </td>
+                <td>
+                    {% if asi.qr %}
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="mostrarQR('{{ asi.qr.url }}')">
+                            Ver QR
+                        </button>
+                    {% else %}
+                        No generado
+                    {% endif %}
+                </td>
+                <td>{{ asi.estado }}</td>
+                <td class="text-center">
+                    <div class="btn-group">
+                        <a href="{% url 'rechazar_asi' evento.id asi.id %}" class="btn btn-outline-danger">Rechazado</a>
+                        <a href="{% url 'aprobar_asi' evento.id asi.id %}" class="btn btn-outline-success">Aprobado</a>
+                    </div>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="8">No hay participantes preinscritos.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="text-start pt-5">
+    <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary m-1">Volver al Inicio</a>
+</div>
+
+<!-- Modal soporte -->
+<div id="imageModal" class="modal" onclick="hideModal()">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<!-- Modal QR -->
+<div id="qrPreviewModal" class="modal" onclick="hideQRModal()">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="qrPreviewImage" alt="QR de acceso">
+</div>
+
+<script>
+// Modal imagen soporte
+function showModal(imgElement) {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImage");
+    modal.style.display = "block";
+    modalImg.src = imgElement.src;
+}
+
+function hideModal() {
+    document.getElementById("imageModal").style.display = "none";
+}
+
+// Modal QR
+function mostrarQR(url) {
+    const modal = document.getElementById("qrPreviewModal");
+    const img = document.getElementById("qrPreviewImage");
+    modal.style.display = "block";
+    img.src = url;
+}
+
+function hideQRModal() {
+    document.getElementById("qrPreviewModal").style.display = "none";
+}
+</script>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'dashboard_principal_evaluador.html' %}
+{% load static %}
+
+{% block title %}Criterios de Evaluación{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">CREAR CRITERIOS</h2>
+    <h3 class="text-center pb-5">Criterios de Evaluación para el Evento: {{ evento.eve_nombre }}</h3>
+
+    <form method="POST" action="{% url 'crear_criterio_eva' evento.id %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="cri_descripcion" class="form-label">Descripción del criterio</label>
+            <input type="text" class="form-control" id="cri_descripcion" name="cri_descripcion" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="cri_peso" class="form-label">Peso (%)</label>
+            <input type="number" class="form-control" id="cri_peso" name="cri_peso" min="0" max="100" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Crear Criterio</button>
+    </form>
+    <div class="col pt-0">
+        <div class="row-auto d-flex justify-content-end">
+            <div class="p-2 border rounded bg-white d-inline-block">
+                <h4 class="mb-0">Suma total:</h4>
+                <h5>
+                    <span class="text-success">{{ suma_pesos }}%</span>
+                    /
+                    <span class="text-danger">100.0 puntos</span>
+                </h5>
+            </div>
+        </div>
+        <div class="row-auto d-flex pt-3 justify-content-end ">
+            <a href="{% url 'ver_criterios_agregados_eva' evento.id %}"
+            class="btn btn-info ms-4 {% if suma_pesos != 100 %}disabled{% endif %}"
+            {% if suma_pesos != 100 %}
+            tabindex="-1" aria-disabled="true"
+            {% endif %}>
+                Ver instrumento de evaluación
+            </a>
+        </div>
+
+        {% if suma_pesos != 100 %}
+            <div class="row-auto d-flex justify-content-end pb-5 mx-3" style="color: red;">
+                <p><small>Llega a 100 puntos para activar.</small></p>
+            </div>
+        {% endif %}
+
+    </div>
+
+    {% if criterios %}
+        <h3 class="text-center">Criterios</h3>
+        <br>
+        <br>
+
+        <table class="table table-striped">
+            <thead>
+                <tr class="text-center">
+                    <th class="col-6">Criterios</th>
+                    <th class="col-1">Peso</th>
+                    <th class="col-2">Editar Peso</th>
+                    <th class="col-2">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for criterio in criterios %}
+                    <tr>
+                        <td>
+                            <form method="POST" action="{% url 'actualizar_criterio_eva' criterio.id %}">
+                            {% csrf_token %}
+                            <textarea class="form-control" name="cri_descripcion" style="width: 100%;">{{ criterio.cri_descripcion }}</textarea>
+                        </td>
+                        <td>
+                            <h4 class="text-center" style="color: rgb(17, 143, 0);">{{ criterio.cri_peso}}</h4>
+                        </td>
+                        <td>
+                            <input type="number" class="form-control" name="cri_peso" value="{{ criterio.cri_peso|floatformat:'2' }}" min="0" max="100">
+                        </td>
+                        
+                        <td>
+                            <div class=" d-flex justify-content-between">
+                                <button type="submit" class="btn btn-success">Guardar</button>
+                            </form>
+                                <form method="POST" action="{% url 'eliminar_criterio_eva' criterio.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay criterios asociados a este evento.</p>
+    {% endif %}
+    
+    <div class="pt-5">
+        <a href="{% url 'dashboard_evaluador' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>    
+</div>
+
+
+
+{% endblock %}

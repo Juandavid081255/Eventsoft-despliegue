@@ -1,0 +1,350 @@
+/* General */
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+
+.soporte-flotante {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.soporte-flotante:hover {
+    background-color: #0b5f00;
+}
+
+
+hr {
+    width: 100%; 
+    height: 1; 
+    background-color: #ccc;
+}
+
+/* Contenedor */
+.contenedor-principal {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+
+.carta {
+    display: flex;
+
+    flex-direction: column;
+    border: 1px solid #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgb(255, 255, 255);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* Card */
+.card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ffffff3e;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgb(255, 255, 255);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0.9;
+
+    
+}
+
+.card:hover {
+    transform: scale(1.01);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    opacity: 1;
+
+    
+    
+}
+
+/* Imagen */
+.card img {
+    width: 100%;
+    height: 100%;
+    padding: 5px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+
+/* Contenido */
+.card-body {
+    padding: 10px;
+}
+
+.card-body h5 {
+    margin: 0 0 8px 0;
+}
+
+.descripcion {
+    color: #666;
+    font-size: 0.95em;
+}
+
+/* Footer */
+.card-footer {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85em;
+    min-height: 180px; /* O ajústalo a lo que te funcione mejor */
+    
+}
+
+/* Fecha */
+.fecha {
+    text-transform: uppercase;
+    color:  #006400;
+    padding: 10px;
+}
+
+.numero {
+    font-size: 2.5em;
+    font-weight: bold;
+
+}
+
+/* Botón */
+.btn { 
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+
+.accordion-header {
+    cursor: pointer;
+}
+
+
+.accordion-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+header {
+    background: linear-gradient(to bottom, #4cd137, #006400); /* degradado verde */
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+}
+
+
+
+
+.footer-corporativo {
+    background: linear-gradient(to bottom, #4cd137, #006400); /* degradado verde */
+    color: #ffffff;
+    font-size: 0.9rem;
+    padding: 20px 0;
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.footer-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 400px;
+    margin-right: 41px;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #ccc;
+    text-decoration: underline;
+}
+
+
+@media (max-width: 768px) {
+    .footer-link {
+        font-size: 0.85rem;
+    }
+
+    .footer-corporativo .row {
+        text-align: center !important;
+    }
+
+    .footer-corporativo img {
+        margin-bottom: 200px;
+    }
+}
+
+
+
+.form-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.contenedor{
+    background: linear-gradient(to bottom, #4cd137, #006400); /* degradado verde */
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin: 50px auto;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+
+main {
+    padding-top: 100px; /* Espacio para el header fijo */
+}
+
+
+.card-past {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.countdown-text {
+    color: rgb(255, 247, 0);
+    font-size:x-small;
+}
+
+
+/* Alertas */
+
+.alert-success {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 10000;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 4px solid #035700;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.507);
+    font-size: 0.9em;
+    animation: fadeInOut 7s ease-in-out;
+}
+
+/* Opcional: animación para aparecer y desaparecer */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(20px); }
+}
+
+
+.contenedor_simple {
+    background-color: #ffffff;
+    color: #000000;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
+    max-width: 1000px;
+}
+
+/* Nivel 1: fondo blanco */
+.contenedor-blanco {
+    background: transparent; /* antes estaba blanco */
+    padding: 30px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    box-shadow: none; /* quitar sombra */
+}
+
+
+/* Nivel 2: recuadro gris */
+.contenedor-gris {
+    background: #f0f0f0;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Logo */
+.caja-logo img {
+    max-width: 200px;
+    height: auto;
+}
+
+/* Nivel 3: recuadro verde para el texto */
+.caja-info {
+    background: linear-gradient(to bottom, #4cd137, #006400); /* degradado verde */
+    color: #000;              /* texto en negro para que resalte */
+    padding: 20px;
+    border-radius: 10px;
+    flex: 1;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* sombra ligera para dar relieve */
+}
+
+
+
+.caja-info h3 {
+    margin-bottom: 15px;
+}
+
+.caja-info p {
+    margin-bottom: 20px;
+}
+
+.btn-eventos {
+    background-color: #004080 !important; /* azul oscuro */
+    border: none !important;
+    color: #fff !important;
+    transition: background 0.3s ease;
+}
+
+.btn-eventos:hover {
+    background-color: #002b5c !important; /* azul más oscuro al pasar el mouse */
+}
+
+/* Contenedor en dos columnas */
+.contenedor-mv {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; /* espacio entre misión y visión */
+    margin: 40px auto;
+    max-width: 1100px;
+}
+
+/* Cada caja */
+.caja-mv {
+    flex: 1;
+    background-color: #f1f1f1; /* gris claro */
+    color: #3e7400;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}

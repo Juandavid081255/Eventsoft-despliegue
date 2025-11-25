@@ -1,0 +1,89 @@
+{% extends 'notificar_evento_par_asi_eva.html' %}
+{% load static %}
+
+{% block title %}Notificación Exponentes{% endblock %}
+
+{% block notificar %}
+<h4 class="mb-3">Selecciona los <strong>Exponentes</strong> (líderes de grupo o individuales) a notificar</h4>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <label for="filtro_estado" class="fw-bold me-2">Filtrar por estado:</label>
+        <select id="filtro_estado" class="form-select d-inline-block w-auto">
+            <option value="Todos">Todos</option>
+            <option value="Aprobado">Aprobado</option>
+            <option value="Pendiente">Pendiente</option>
+        </select>
+    </div>
+</div>
+
+<form method="post" action="{% url 'notificar_par' evento.id %}">
+    {% csrf_token %}
+
+    <table class="table table-bordered table-striped align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th><input type="checkbox" id="select_all"></th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Estado</th>
+                <th>Tipo</th>
+            </tr>
+        </thead>
+        <tbody id="tabla_participantes">
+            {% for rel in participantes %}
+                <tr data-estado="{{ rel.par_eve_estado }}">
+                    <td><input type="checkbox" name="participantes" value="{{ rel.id }}"></td>
+                    <td>{{ rel.par_eve_participante_fk.usuario.get_full_name }}</td>
+                    <td>{{ rel.par_eve_participante_fk.usuario.email }}</td>
+                    <td>
+                        {% if rel.par_eve_estado == 'Aprobado' %}
+                            <span class="badge bg-success">{{ rel.par_eve_estado }}</span>
+                        {% elif rel.par_eve_estado == 'Pendiente' %}
+                            <span class="badge bg-warning text-dark">{{ rel.par_eve_estado }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rel.par_eve_es_grupo %}
+                            <span class="badge bg-info text-dark">Líder de grupo</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Individual</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">
+                        No hay exponentes registrados en este evento.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mb-3">
+        <label for="mensaje" class="form-label fw-bold">Mensaje</label>
+        <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-send"></i> Enviar notificación
+    </button>
+</form>
+
+<script>
+document.getElementById('select_all').addEventListener('click', function() {
+    document.querySelectorAll('input[name="participantes"]').forEach(cb => cb.checked = this.checked);
+});
+
+document.getElementById('filtro_estado').addEventListener('change', function() {
+    const estadoSeleccionado = this.value;
+    document.querySelectorAll('#tabla_participantes tr').forEach(row => {
+        const estado = row.getAttribute('data-estado');
+        row.style.display = (estadoSeleccionado === 'Todos' || estado === estadoSeleccionado)
+            ? ''
+            : 'none';
+    });
+});
+</script>
+{% endblock %}

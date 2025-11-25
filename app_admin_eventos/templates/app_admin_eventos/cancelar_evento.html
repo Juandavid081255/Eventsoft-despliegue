@@ -1,0 +1,64 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Info Evento{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <div class=" mb-3">
+        <div class="py-5 px-4 bg-light  rounded shadow-sm">
+            <h4 class="text-center text-danger fw-bold pb-4">Confirmación de cancelación del evento</h4> 
+            <p class="text-justify"> Antes de proceder con la cancelación, es importante que 
+                <strong>notifiques con anticipación a todos los participantes</strong> sobre 
+                esta decisión. Puedes hacerlo fácilmente utilizando el siguiente botón: 
+                <strong><a href="{% url 'notificar_evento' evento.id %}" class="btn btn-success"> <i class="bi bi-bell"></i> Notificar</a></strong> 
+                Esto garantizará una comunicación adecuada y evitará confusiones o malentendidos entre los asistentes. 
+            </p> <p class="text-justify"> Una vez confirmada la cancelación, <strong>el evento dejará de ser visible en 
+                la página principal</strong> y ya no estará disponible para inscripciones, consultas o modificaciones. 
+                Esta acción tiene un carácter definitivo, por lo que te recomendamos asegurarte de que realmente deseas continuar. 
+            </p> <p class="text-justify"> En caso de que el evento sea <strong>de pago</strong>, recuerda gestionar de inmediato las 
+                <strong>devoluciones correspondientes</strong> a los Asistentes. Cumplir con este paso de manera oportuna ayudará 
+                a mantener la transparencia del proceso y evitar posibles inconvenientes o reclamaciones posteriores. </p> 
+                <p class="text-justify text-danger fw-bold"> Una vez confirmes la cancelación, <strong>no habrá posibilidad de 
+                    revertir esta acción</strong>. Por ello, te sugerimos revisar todos los detalles y asegurarte de que la 
+                    decisión sea definitiva antes de continuar. </p>
+            <div class="p-5 rounded m-5 text-center
+                {% if evento.eve_estado == 'Cancelado' or evento.eve_estado == 'Finalizado' %}
+                    text-white bg bg-danger w-50 mx-auto
+                {% else %}
+                    {{ evento.eve_estado }} text-white bg bg-success w-50 mx-auto
+                {% endif %}">
+                <h2>{{ evento.eve_estado }}</h2>
+            </div>
+
+            {% if evento.eve_estado == 'Finalizado' or evento.eve_estado == 'Cancelado' %}
+                <div class="alert alert-warning text-center m-5" role="alert">
+                    <strong>Nota:</strong> Este evento ya ha sido cancelado o finalizado.
+                </div>
+            {% else %}
+                <div class="text-center pt-4">
+                    <form method="post" action="{% url 'evento_estado_cancelado' evento.id %} " onsubmit="return confirmarCancelacion();">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger m-1">Sí, cancelar evento</button>
+                        <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary m-1">No, regresar al panel</a>
+                    </form>
+                </div>
+                <script>
+                    function confirmarCancelacion() {
+                        return confirm("¿Estás seguro de que deseas cancelar este evento?");
+                    }
+                </script>
+            {% endif %}
+            
+        </div>
+
+
+        <div class="text-start pt-5">
+            <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary m-1">Volver al Inicio</a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Event-Soft</title>
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <div class="login-wrapper d-flex align-items-center justify-content-center">
+        <div class="login-card d-flex">
+            <div class="login-image col-md-6 d-none d-md-flex flex-column align-items-center justify-content-center" style="color: white;">
+                <img src="{% static 'img/favicon.png' %}" alt="Logo Event-Soft" class="mb-3" style="max-width: 500px;">
+                <h3 class="text-center">Event-Soft</h3>
+                <small>Gestión de eventos</small>
+            </div>
+
+
+            <div class="login-box col-md-6 ">
+                <h5 class="text-muted text-center m-5">Inicia sesión con tus credenciales</h5>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" class="form-control text-center" id="email_username" name="email_username" placeholder="Correo o nombre de usuario" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control text-center" id="password" name="password" placeholder="Contraseña" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="text-muted">Seleccionar rol</label>
+                        <select id="role" name="role" class="form-control">
+                            <option value="ASISTENTE">Asistente</option>
+                            <option value="PARTICIPANTE">Participante</option>
+                            <option value="EVALUADOR">Evaluador</option>
+                            <option value="ADMIN_EVENTO">Administrador de evento</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-block ">Iniciar Sesión</button>
+                </form>
+
+                {% if error %}
+                    <div class="alert alert-danger mt-3 text-center" role="alert">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <div class="mt-3 text-center">
+                    <a href="{% url 'restablecer_contrasena' %}" class="d-block small">¿Olvidaste tu contraseña?</a>
+                    <a href="{% url 'pagina_principal' %}" class="btn btn-outline-success mt-5 w-100"><i class="bi bi-house-door"></i><strong> Inicio</strong></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>
+

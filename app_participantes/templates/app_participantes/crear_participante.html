@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Participante{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">Formulario de preinscripción de ponente</h2>
+    <div class="row px-5">
+        <div class="card contenedor col-2">
+            <img src="{{ evento.eve_imagen.url }}" alt="Imagen del Evento" class="img-fluid rounded mx-auto d-block evento-img" style="max-width: 100%; height: auto;">
+        </div>
+        <div class="col-8 pt-5">
+            <h4 class="text-center pt-4"><strong>{{ evento.eve_nombre}}</strong></h4>
+            <p class="pt-4">{{evento.eve_descripcion}}</p>
+        </div>
+    </div>
+    <hr>
+
+    <form method="POST" enctype="multipart/form-data" novalidate id="formParticipante">
+        {% csrf_token %}
+
+        <div class="row-12">
+            <h5 class="my-5 contenedor">Datos del líder del proyecto</h5>
+            <div class="col mb-3">
+                <label for="id" class="form-label">Cédula</label>
+                {{ form.cedula}}
+                {% if form.cedula.errors %}
+                    <div class="text-danger">
+                        {{ form.cedula.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col mb-3">
+                <label for="username" class="form-label">Nombre de usuario</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="text-danger">
+                        {{ form.username.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            
+
+            <div class="col mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row-12">
+            <div class="col mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                {{ form.telefono }}
+                {% if form.telefono.errors %}
+                    <div class="text-danger">
+                        {{ form.telefono.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col mb-3">
+                <label for="first_name" class="form-label">Nombre</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger">
+                        {{ form.first_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col mb-3">
+                <label for="last_name" class="form-label">Apellido</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger">
+                        {{ form.last_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h5>Tipo de participación</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipo_participacion" id="individual" value="individual" checked>
+                <label class="form-check-label" for="individual">
+                    Individual
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipo_participacion" id="grupo" value="grupo">
+                <label class="form-check-label" for="grupo">
+                    Grupo
+                </label>
+            </div>
+        </div>
+
+        <div id="seccionGrupo" style="display: none;">
+            <div class="alert alert-info">
+                El grupo está limitado a un máximo de <strong style="color: brown;">5 personas</strong> en total (incluyendo al líder).
+            </div>
+            <h5 class="mt-4">Miembros del grupo</h5>
+            <p class="text-muted">Agregue los datos de los demás miembros de su grupo:</p>
+            
+            <div id="miembrosContainer">
+                </div>
+            
+            <button type="button" class="btn btn-secondary mb-3" id="btnAgregarMiembro">
+                <i class="fas fa-plus"></i> Agregar miembro
+            </button>
+        </div>
+
+        <br>
+        <div class="mb-3">
+            <label for="par_eve_documentos" class="form-label">Documento de Exposición</label>
+            <input type="file" name="par_eve_documentos" id="id_par_eve_documentos" class="form-control">
+        </div>
+        <div class="mb-3">
+            <embed id="preview_pdf" type="application/pdf" width="100%" height="400px" style="display: none; margin-top: 10px;" />
+        </div>
+        <p class="text-muted alert alert-warning">
+            Debes subir un archivo en formato **PDF** que contenga el **proyecto o tema que vas a exponer**. Asegúrate de que el documento tenga una **buena redacción y presentación**, ya que será evaluado como parte del proceso de selección para el evento.
+        </p>
+        
+        <div class="mt-5 text-center">
+            <button type="submit" class="btn btn-primary">Enviar Registro</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const MAX_MIEMBROS_ADICIONALES = 4; // Límite de miembros adicionales (5 personas total - 1 líder)
+    const radioIndividual = document.getElementById('individual');
+    const radioGrupo = document.getElementById('grupo');
+    const seccionGrupo = document.getElementById('seccionGrupo');
+    const btnAgregarMiembro = document.getElementById('btnAgregarMiembro');
+    const miembrosContainer = document.getElementById('miembrosContainer');
+    let contadorMiembros = 0; // Usado para nombrar los campos (miembro_1, miembro_2, etc.)
+
+    // Función para obtener la cantidad actual de miembros visibles
+    function obtenerConteoMiembrosVisibles() {
+        return miembrosContainer.children.length;
+    }
+
+    // Manejar cambio de tipo de participación
+    function toggleSeccionGrupo() {
+        if (radioGrupo.checked) {
+            seccionGrupo.style.display = 'block';
+            if (obtenerConteoMiembrosVisibles() >= MAX_MIEMBROS_ADICIONALES) {
+                btnAgregarMiembro.disabled = true;
+            } else {
+                btnAgregarMiembro.disabled = false;
+            }
+        } else {
+            seccionGrupo.style.display = 'none';
+            // Limpiar miembros y resetear contador cuando se cambia a individual
+            miembrosContainer.innerHTML = '';
+            contadorMiembros = 0;
+            btnAgregarMiembro.disabled = false;
+        }
+    }
+
+    radioIndividual.addEventListener('change', toggleSeccionGrupo);
+    radioGrupo.addEventListener('change', toggleSeccionGrupo);
+
+    // Agregar miembro al grupo
+    btnAgregarMiembro.addEventListener('click', function() {
+        if (obtenerConteoMiembrosVisibles() >= MAX_MIEMBROS_ADICIONALES) {
+            alert(`El grupo ya alcanzó el límite máximo de ${MAX_MIEMBROS_ADICIONALES} miembros adicionales (5 personas en total).`);
+            btnAgregarMiembro.disabled = true;
+            return;
+        }
+        
+        contadorMiembros++; // Solo usamos para asegurar nombres únicos en el POST
+        const indiceMiembro = contadorMiembros; 
+
+        const miembroDiv = document.createElement('div');
+        miembroDiv.className = 'border p-3 mb-3 rounded miembro-item';
+        miembroDiv.setAttribute('data-index', indiceMiembro);
+
+        miembroDiv.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6>Exponente #${obtenerConteoMiembrosVisibles() + 1}</h6>
+                <button type="button" class="btn btn-sm btn-danger" onclick="eliminarMiembro(this, ${indiceMiembro})">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </div>
+            <div class="row ">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Cédula</label>
+                    <input type="number" name="miembro_${indiceMiembro}_cedula" class="form-control" placeholder="Cédula" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="miembro_${indiceMiembro}_nombre" class="form-control" placeholder="Nombre completo" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Apellido</label>
+                    <input type="text" name="miembro_${indiceMiembro}_apellido" class="form-control" placeholder="Apellido completo" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Correo</label>
+                    <input type="email" name="miembro_${indiceMiembro}_email" class="form-control" placeholder="Correo" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" name="miembro_${indiceMiembro}_telefono" class="form-control" placeholder="Teléfono">
+                </div>
+            </div>
+        `;
+        miembrosContainer.appendChild(miembroDiv);
+        
+        // Deshabilitar botón si se alcanza el límite
+        if (obtenerConteoMiembrosVisibles() >= MAX_MIEMBROS_ADICIONALES) {
+            btnAgregarMiembro.disabled = true;
+        }
+    });
+
+    // Función global para eliminar miembro
+    window.eliminarMiembro = function(button, index) {
+        button.closest('.miembro-item').remove();
+        
+        // Habilitar botón si ya no se está en el límite
+        if (obtenerConteoMiembrosVisibles() < MAX_MIEMBROS_ADICIONALES) {
+            btnAgregarMiembro.disabled = false;
+        }
+
+        // Renumerar los títulos de los miembros restantes
+        const miembros = miembrosContainer.querySelectorAll('.miembro-item');
+        for (let i = 0; i < miembros.length; i++) {
+            const h6 = miembros[i].querySelector('h6');
+            h6.textContent = `Miembro ${i + 1}`;
+        }
+    };
+
+    // Agregar validación al envío del formulario
+    document.getElementById('formParticipante').addEventListener('submit', function(e) {
+        // La validación del límite máximo ya se realiza al agregar, la del límite mínimo sigue siendo necesaria.
+        if (radioGrupo.checked && obtenerConteoMiembrosVisibles() === 0) {
+            e.preventDefault();
+            alert('Debe agregar al menos un miembro al grupo para la participación grupal.');
+        }
+    });
+
+    // Inicializar el estado de la sección del grupo al cargar la página
+    toggleSeccionGrupo();
+});
+</script>
+{% endblock %}

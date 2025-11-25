@@ -1,0 +1,165 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Editar Evento{% endblock %}
+
+{% block content %}
+
+
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">EDITAR EVENTO</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            {{ form.eve_nombre.label_tag }}
+            {{ form.eve_nombre }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.eve_descripcion.label_tag }}
+            <textarea name="eve_descripcion" id="id_eve_descripcion" class="form-control" rows="4" maxlength="499" oninput="contarCaracteres()">{{ form.eve_descripcion.value|default:'' }}</textarea>
+            <small id="contador_descripcion" class="form-text text-muted">0 / 499 caracteres</small>
+        </div>
+
+        
+
+        <div class="row mb-3">
+            <div class="col-md-4 mb-2">
+                {{ form.eve_ciudad.label_tag }}
+                {{ form.eve_ciudad }}
+            </div>
+
+            <div class="col-md-4 mb-2">
+                {{ form.eve_lugar.label_tag }}
+                {{ form.eve_lugar }}
+            </div>
+
+            <div class="col-md-2 mb-2">
+                {{ form.eve_fecha_inicio.label_tag }}
+                {{ form.eve_fecha_inicio }}
+            </div>
+            
+
+            <div class="col-md-2 mb-2">
+                {{ form.eve_fecha_fin.label_tag }}
+                {{ form.eve_fecha_fin }} 
+            </div>
+        </div>
+
+        <div class="row mb-5 align-items-center">
+            <div class="col-md-4">
+                {{ form.eve_estado.label_tag }}
+                <select name="eve_estado" id="eve_estado" class="form-control" required>
+                    {% for estado in form.fields.eve_estado.queryset %}
+                    -
+                    {% endfor %}
+                    <option class="text-success" value="Publicado" {% if form.eve_estado.value == "Publicado" %}selected{% endif %}>Publicar ahora mismo</option>
+                    <option class="text-info" value="Editando" {% if form.eve_estado.value == "Editando" %}selected{% endif %}>Seguir Editando y más tarde lo publicaré</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                {{ form.eve_tienecosto.label_tag }}
+                <select name="eve_tienecosto" id="eve_tienecosto" class="form-control" required>
+                    <option value="">¿Tiene costo?</option>
+                    <option value="De pago" {% if form.eve_tienecosto.value == "De pago" %}selected{% endif %}>De pago</option>
+                    <option value="Es gratis" {% if form.eve_tienecosto.value == "Es gratis" %}selected{% endif %}>Es gratis</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                {{ form.eve_capacidad.label_tag }}
+                {{ form.eve_capacidad }}
+            </div>
+
+        </div>
+
+        <!-- Área -->
+        <div class="row mb-3">
+            <div class="col-md-12 mb-4">
+                {{ form.area.label_tag }}
+                <select name="area" id="id_area" class="form-control">
+                    {% for area in areas %}
+                        <option value="{{ area.id }}" {% if form.instance.area == area %}selected{% endif %}>
+                            {{ area.are_nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Categoría (derecha) -->
+            <div class="col-md-6 mb-4">
+                {{ form.categorias.label_tag }}
+                <select name="categorias" id="id_categoria" class="form-control" multiple>
+                    {% for categoria in categorias %}
+                        <option 
+                            value="{{ categoria.id }}" 
+                            data-area="{{ categoria.cat_area_fk.id }}" 
+                            data-descripcion="{{ categoria.cat_descripcion }}"
+                            {% if categoria in selected_categorias %}selected{% endif %}
+                        >
+                            {{ categoria.cat_nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Descripción de la categoría seleccionada (izquierda) -->
+            <div class="col-md-6 mb-4">
+                <label for="cat_descripcion" class="form-label">
+                    Descripción de la categoría seleccionada
+                </label>
+                <textarea id="cat_descripcion" class="form-control" rows="3" readonly></textarea>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-4">
+                <label for="eve_imagen">Imagen del Evento:</label>
+                {{ form.eve_imagen }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <img id="preview_imagen" src="{{ form.instance.eve_imagen.url }}" alt="Vista previa de la imagen" style="max-width: 300px; margin-top: 10px;">
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+        <div class="row mb-3">
+            <div class="col-md-6 mb-4">
+                <label for="eve_programacion" class="form-label">Archivo de Programación (PDF):</label>
+                {{ form.eve_programacion }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <embed id="preview_pdf" type="application/pdf" width="100%" height="400px" style="margin-top: 10px;" src="{{ form.instance.eve_programacion.url }}">
+            </embed>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        </div>
+            
+        
+    </form>
+    <div class="text-start pt-5">
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary my-4">Volver al Inicio</a>
+    </div>
+</div>
+
+
+
+
+<script src="{% static 'js/Previsualizarimg_pdfs.js' %}"></script>
+<script src="{% static 'js/filtrar_areas_categorias.js' %}"></script>
+<script src="{% static 'js/da_descripcion_categoria.js' %}"></script>
+<script src="{% static 'js/calendario_select_fechas_actuales.js' %}"></script>
+{% endblock %}

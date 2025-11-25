@@ -1,0 +1,137 @@
+{% extends 'dashboard_principal_participante.html' %}
+{% load static %}
+
+{% block title %}Info Evento{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">INFORMACIÓN DEL EVENTO</h2>
+    <div class="carta mb-3">
+        <div class ="row md-6 p-4">
+            <div class="col-md-5 d-flex justify-content-center align-items-center">
+                <img src="{{ evento.eve_imagen.url }}" alt="{{ evento.eve_nombre }}" class="card img-fluid rounded mb-2 evento-img" style="max-width: 300px; height: auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);">
+            </div>
+
+            <div class="col-md-6 ">
+                <div class="card-body ">
+                    <h2 class="card-title pb-4">{{ evento.eve_nombre }}</h2>
+                    <p class="card-text pb-3">{{ evento.eve_descripcion }}</p>
+                    <hr>
+                    <div class="row pb-3">
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Ciudad:</strong> {{ evento.eve_ciudad }}</small></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Lugar:</strong> {{ evento.eve_lugar }}</small></p>
+                        </div>
+                    </div>
+                    <div class="row pb-3">
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Fecha de Inicio:</strong> {{ evento.eve_fecha_inicio|date:"d M Y" }}</small></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Fecha de Fin:</strong> {{ evento.eve_fecha_fin|date:"d M Y" }}</small></p>
+                        </div>
+                    </div>
+                    <div class="row pb-3">
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Capacidad:</strong> {{ evento.eve_capacidad }} personas</small></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Estado Costo:</strong> {{ evento.eve_tienecosto }}</small></p>
+                        </div>
+                    </div>
+                    <div class="row pb-3">
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Estado:</strong> {{ evento.eve_estado }}</small></p>
+                        </div>
+                    </div>
+                </div>
+                    <small class=" text-center">
+                        <div class="row justify-content-center pb-4">
+                            <strong>Programación:</strong>
+                            <br>
+                            <br>
+                            <div class="col-md-12 text-center">
+                            {% if evento.eve_programacion %}
+                                <a href="{{ evento.eve_programacion.url }}" download target="_blank" class="btn btn-success mb-1 ">Descargar</a>
+                                <a href="{{ evento.eve_programacion.url }}" target="_blank" class="btn btn-success mb-1">Previsualizar programación</a>
+                            {% else %}
+                                No disponible
+                            {% endif %}
+                            </div>
+                        </div>
+                    </small> 
+                </div>
+                <hr>
+                <div class="col my-3 d-flex justify-content-center">
+                    <button class="btn btn-dark w-50" data-bs-toggle="modal" data-bs-target="#modalCompartir">
+                        <i class="bi bi-share-fill "></i> Compartir
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="text-start pt-5">
+            <a href="{% url 'dashboard_participante' %}" class="btn btn-secondary m-1">Volver al Inicio</a>
+        </div>  
+    </div>       
+</div>
+
+
+
+
+    <!-- MODAL COMPARTIR -->
+    <div class="modal fade" id="modalCompartir" tabindex="-1" aria-labelledby="modalCompartirLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalCompartirLabel">Compartir evento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+
+            <!-- Copiar enlace -->
+            <div class="d-flex">
+            <input type="text" id="enlaceEvento" class="form-control me-2"
+                    value="{{ request.build_absolute_uri }}" readonly>
+            <button class="btn btn-outline-secondary" onclick="copiarEnlace()">
+                <i class="bi bi-clipboard"></i>
+            </button>
+            </div>
+            <p class="text-muted small text-center mt-2">
+            Copia el enlace o compártelo directamente:
+            </p>
+
+            
+
+            <!-- Enlaces a redes -->
+            <div class="d-flex justify-content-around">
+            <a class="btn btn-success" target="_blank"
+                href="https://wa.me/?text={{ request.build_absolute_uri|urlencode }}">
+                <i class="bi bi-whatsapp me-1"></i> WhatsApp
+            </a>
+            <a class="btn btn-primary" target="_blank"
+                href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}">
+                <i class="bi bi-facebook me-1"></i> Facebook
+            </a>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+    function copiarEnlace() {
+        const enlace = document.getElementById("enlaceEvento");
+        enlace.select();
+        enlace.setSelectionRange(0, 99999); // Para móviles
+        document.execCommand("copy");
+        alert("Enlace copiado al portapapeles");
+    }
+    </script>
+    
+
+{% endblock %}

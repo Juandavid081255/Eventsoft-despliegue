@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Cancelar preinscripción{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <h2 class="contenedor">CANCELAR PREINSCRIPCIÓN</h2>
+
+    <!-- Formulario de búsqueda por ID del asistente -->
+    <form method="get" action="{% url 'vista_cancelar_preins' %}">
+        <div class="form-group">
+            <label for="asistente_id"></label>
+            <input type="number" class="form-control" id="asistente_id" name="asistente_id" placeholder="Introduce la cédula del asistente" required>
+        </div>
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-primary mt-3">Buscar</button>
+        </div>
+        <hr class="my-5">
+        
+    </form>
+
+    {% if asistente %}
+        <div class="mt-5">
+            <h3 class="text-center pb-4"><strong>Detalles del Asistente</strong></h3>
+            <div class="card row p-3">
+                <div class ="col-md-6 ">
+                    <p><strong>Asistente:</strong> {{ asistente.usuario.nombre }}</p>
+                    <p><strong>Correo:</strong> {{ asistente.usuario.correo }}</p>
+                </div>
+                <div class ="col-md-6">
+                    <p><strong>Evento:</strong> {{ evento.eve_nombre }}</p>
+                    <p><strong>Estado de preinscripción:</strong> {{ estado }}</p>
+                </div>
+            </div>
+            <form method="POST" action="{% url 'cancelar_preinscripcion' asistente.id %}" id="cancelar-form">
+                {% csrf_token %}
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-danger" onclick="return confirmarCancelacion()">Cancelar preinscripción</button>
+                </div>
+            </form>
+        </div>
+    {% elif error %}
+        <p class="text-danger my-5">{{ error }}</p>
+    {% endif %}
+
+    <div class="mt-5">
+        <a href="{% url 'pagina_principal' %}" class="btn btn-secondary">Volver a la lista de asistentes</a>
+    </div>
+</div>
+
+
+<script>
+    function confirmarCancelacion() {
+        return confirm("¿Estás seguro de que deseas cancelar tu preinscripción? Esta acción eliminará todos tus datos del sistema.");
+    }
+</script>
+
+
+{% endblock %}

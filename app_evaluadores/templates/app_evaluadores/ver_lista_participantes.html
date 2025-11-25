@@ -1,0 +1,46 @@
+{% extends 'dashboard_principal_evaluador.html' %}
+{% load static %}
+
+{% block title %}Lista de participantes{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">CALIFICAR PARTICIPANTES</h2>
+
+    <form method="get" class="mb-3">
+        <input type="text" class="form-control" id="filtro" name="filtro" placeholder="Buscar por nombre o cédula" value="{{ request.GET.filtro }}">
+    </form>
+
+    <div class="row">
+        {% for participante in participantes %}
+        <div class="col-md-4 my-4 participante-card">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="row mt-0">
+                        <div class="col-md-10">
+                            <p class="card-title nombre"><strong>{{ participante.usuario.first_name }} {{ participante.usuario.last_name }}</strong></p>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <i class="bi bi-card-checklist float-end"></i>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <p class="card-text cedula"><strong>Cédula:</strong> {{ participante.id }}</p>
+                    <p class="card-text"><strong>Correo:</strong> {{ participante.usuario.email }}</p>
+                    <div class="text-center">
+                        <a href="{% url 'calificando_participante' participante.id evento.id %}" class="btn btn-success w-100 mt-2">
+                            Evaluar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-start pt-5">
+        <a href="{% url 'dashboard_evaluador' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'dashboard_principal_admin.html' %}
+
+{% block title %}Configurar Evento - {{ evento.eve_nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="shadow">
+                <div class="card-body">
+                    <h3 class="text-center my-4 mb-5 contenedor">⚙️ Configurar Evento</h3>
+                    <p class="text-center text-muted mb-4">
+                        <strong>{{ evento.eve_nombre }}</strong>
+                    </p>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="margin-bottom: 20px;">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Información Actual -->
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                        <h5 style="margin-bottom: 15px; color: #495057;">📊 Información Actual</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p><strong>Capacidad Máxima:</strong></p>
+                                <p style="font-size: 18px; color: #0d6efd;">{{ evento.eve_capacidad }} personas</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p><strong>Inscritos Actualmente:</strong></p>
+                                <p style="font-size: 18px; color: #0d6efd;">
+                                    <span class="badge bg-info" style="font-size: 14px;">{{ inscritos }}</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>¿Tiene Costo?</strong></p>
+                                <p style="font-size: 16px;">
+                                    {% if evento.eve_tienecosto == 'Si' %}
+                                        <span class="badge bg-warning">Sí, tiene costo</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Gratuito</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Estado:</strong></p>
+                                <p style="font-size: 16px;">
+                                    <span class="badge bg-primary">{{ evento.eve_estado }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Formulario de Configuración -->
+                    <h5 style="margin-bottom: 20px; color: #495057;">📝 Modificar Configuración</h5>
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="eve_capacidad" class="form-label">
+                                <strong>Capacidad Máxima *</strong>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="eve_capacidad" 
+                                name="eve_capacidad" 
+                                class="form-control" 
+                                value="{{ evento.eve_capacidad }}"
+                                min="1"
+                                required
+                            >
+                            <small class="form-text" style="color: #6c757d; display: block; margin-top: 8px;">
+                                ⚠️ <strong>Nota:</strong> No puede ser menor a {{ inscritos }} (inscritos actuales)
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="eve_tienecosto" class="form-label">
+                                <strong>¿El evento tiene costo? *</strong>
+                            </label>
+                            <select id="eve_tienecosto" name="eve_tienecosto" class="form-select" required>
+                                <option value="Si" {% if evento.eve_tienecosto == 'Si' %}selected{% endif %}>
+                                    Sí, el evento tiene costo
+                                </option>
+                                <option value="No" {% if evento.eve_tienecosto == 'No' %}selected{% endif %}>
+                                    No, el evento es gratuito
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div class="text-center" style="margin-top: 30px;">
+                            <button type="submit" class="btn btn-success" style="padding: 10px 30px;">
+                                💾 Guardar Configuración
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Validaciones Importantes -->
+                    <div style="background-color: #e7f3ff; padding: 15px; border-left: 4px solid #0d6efd; margin-top: 30px; border-radius: 4px;">
+                        <p style="margin: 0;">
+                            <strong>ℹ️ Validaciones Importantes:</strong><br>
+                            • La capacidad debe ser un <strong>número positivo</strong><br>
+                            • No puede ser <strong>menor al número de inscritos</strong> actuales ({{ inscritos }})<br>
+                            • Solo el <strong>administrador propietario</strong> puede cambiar la configuración<br>
+                            • Los cambios se aplican <strong>inmediatamente</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

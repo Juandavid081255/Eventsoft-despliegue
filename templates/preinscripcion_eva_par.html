@@ -1,0 +1,54 @@
+{% extends 'info_evento.html' %}
+{% load static %}
+
+{% block title %}Preinscripción Evaluador/Expositor{% endblock %}
+
+{% block preins %}
+<div class="row pt-2 ">
+    <div class="col-md-6 text-center">
+         <a
+            href="{% if evento.eve_estado != 'Finalizado' and evento.preinscripcion_habilitada_participantes != 1 %}{% url 'crear_participante' evento.id %}{% else %}#{% endif %}"
+            class="btn btn-outline-success mt-3 {% if evento.eve_estado == 'Finalizado' or evento.preinscripcion_habilitada_participantes == 1 %}disabled{% endif %}">
+            Preinscripción como Expositor
+        </a>
+        {% if evento.preinscripcion_habilitada_participantes == 1 %}
+            <div class=" p-1 ">
+                <p class="text-danger"><small>Acción actualmente deshabilitada.</small></p>
+            </div>
+        {% endif %}
+        
+        <div class="pt-5">
+            <p>
+                <small class="text-muted">El Expositor es quien presenta, muestra o explica algo durante el evento. Por ejemplo, si alguien tiene un stand, un proyecto o una charla, esa persona es un expositor.
+                <br>La preinscripción como expositor está sujeta a aprobación por parte del organizador del evento. 
+                </small>
+            </p>
+        </div>
+        
+    </div>
+    <div class="col-md-0 d-flex justify-content-center">
+        <div class="vr" style="height: 100%; width: 1px; background-color: #ccc;"></div>
+    </div>
+    <div class="col md-6 text-center">
+        <a
+            href="{% if evento.eve_estado != 'Finalizado' and evento.preinscripcion_habilitada_evaluadores != 1 %}{% url 'crear_evaluador' evento.id %}{% else %}#{% endif %}"
+            class="btn btn-outline-success mt-3 {% if evento.eve_estado == 'Finalizado' or evento.preinscripcion_habilitada_evaluadores == 1 %}disabled{% endif %}">
+            Preinscripción como Evaluador
+        </a>
+        {% if evento.preinscripcion_habilitada_evaluadores == 1 %}
+            <div class=" p-1 ">
+                <p class="text-danger"><small>Acción actualmente deshabilitada.</small></p>
+            </div>
+        {% endif %}
+        <div class="pt-5">
+            <p>
+                <small class="text-muted">El evaluador es quien evalua a los expositores, proporcionando retroalimentación y puntuaciones.
+                <br> La preinscripción como evaluador está sujeta a aprobación por parte del organizador del evento.
+                </small>
+            </p>
+        </div>
+        
+    </div>
+</div>
+<hr>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'dashboard_principal_asistente.html' %}
+{% load static %}
+
+{% block title %}Editar Preinscripción{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="text-center px-5  contenedor">Editar datos y documentos</h2>
+
+    <form method="post" enctype="multipart/form-data" class="p-4 rounded border shadow bg-light">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Cédula:</label>
+            <input type="text" class="form-control" value="{{ usuario.cedula }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Correo:</label>
+            <input type="email" class="form-control" value="{{ usuario.email }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nombre de usuario:</label>
+            <input type="text" class="form-control" value="{{ usuario.username }}" disabled>
+        </div>
+
+        {{ form.as_p }}
+
+        <hr>
+
+        <!-- mostrar todos los soportes de pago -->
+        <div class="mb-3 text-center">
+            <h4 class="form-label my-5">Soportes de pago</h4>
+            <ul class="list-group">
+                {% for r in todas_relaciones %}
+                    <li class="list-group-item d-flex justify-content-center align-items-center">
+                        <div>
+                            <div class="mb-5">
+                                <strong>Evento:</strong> {{ r.asi_eve_evento_fk.eve_nombre }}<br>
+                                <strong>Estado:</strong> {{ r.asi_eve_estado }}
+                            </div>
+
+                            {% if r.asi_eve_soporte %}
+                                <a href="{{ r.asi_eve_soporte.url }}" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
+                                    Ver soporte
+                                </a>
+                                <div class="mt-2">
+                                    <img src="{{ r.asi_eve_soporte.url }}" alt="Soporte {{ r.asi_eve_evento_fk.eve_nombre }}" 
+                                        class="img-thumbnail" style="max-width: 200px;">
+                                </div>
+                            {% else %}
+                                <span class="text-muted">No cargado aún</span>
+                            {% endif %}
+                            
+                            <!-- Input solo visible si NO está aprobado -->
+                            {% if r.asi_eve_estado != "Aprobado" %}
+                                <div class="mb-3 mt-2">
+                                    <label class="form-label">Actualizar soporte de pago:</label>
+                                    <input type="file" name="asi_eve_soporte_{{ r.id }}" class="form-control" accept="image/*">
+                                </div>
+                            {% else %}
+                                <p class="text-success mt-3"><strong>✅ Ya aprobado, no es necesario editar el soporte de pago.</strong></p>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña Antigua</label>
+            <input type="password" name="nueva_contrasena" class="form-control"
+                placeholder="Contraseña Antigua"
+                autocomplete="off" readonly
+                onfocus="this.removeAttribute('readonly');"
+                onpaste="return True;" ondrop="return false;">
+        </div>
+        
+        <div class = "row">
+            <div class=" col-md-6  mb-3">
+                <label class="form-label">Contraseña Nueva</label>
+                <input type="password" name="confirmar_contrasena_nueva" class="form-control"
+                    placeholder="Contraseña Nueva"
+                    autocomplete="off" readonly
+                    onfocus="this.removeAttribute('readonly');"
+                    onpaste="return false;" ondrop="return false;">
+            </div>
+            <div class="col-md-6  mb-3">
+                <label class="form-label">Confirmar Contraseña Nueva</label>
+                <input type="password" name="confirmar_contrasena" class="form-control"
+                    placeholder="Confirmar contraseña nueva"
+                    autocomplete="off" readonly
+                    onfocus="this.removeAttribute('readonly');"
+                    onpaste="return false;" ondrop="return false;">
+            </div>
+        </div>
+
+
+
+        <div class="text-center m-5">
+            <button type="submit" class="btn btn-outline-success">Guardar Cambios</button>
+        </div>
+    </form>
+
+    <hr class ="mt-5">
+
+        <div class ="text-center m-4"  >
+            <a href="{% url 'eliminar_asistente' asistente.id %}" 
+            class="btn btn-danger btn-sm"
+            onclick="return confirm('¿Estás seguro de que deseas eliminar este evaluador? Esta acción no se puede deshacer.');">
+                Eliminar mis datos
+            </a>
+        </div>
+
+        <p class="text-muted mt-3">
+            Al hacer clic en <strong>"Eliminar mis datos"</strong>, se eliminará permanentemente tu cuenta como evaluador, así como todas las relaciones con los eventos en los que estás inscrito. Esta acción no se puede deshacer.
+        </p>
+    <hr class="mt-5">
+
+    <div class="text-start mt-5">
+        <a href="{% url 'dashboard_asistente' %}" class="btn btn-outline-secondary mt-3">Volver al inicio</a>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Editar Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="text-center px-5  contenedor">Editar Mis Datos y Documento</h2>
+
+    <form method="post" enctype="multipart/form-data" class="p-4 rounded border shadow bg-light">
+        {% csrf_token %}
+
+        <div class = "row">
+            <div class=" col-md-6  mb-3">
+        
+                <label class="form-label">Cédula:</label>
+                <input type="text" class="form-control" value="{{ usuario.cedula }}" disabled>
+            </div>
+
+            <div class=" col-md-6  mb-3">
+                <label class="form-label">Correo:</label>
+                <input type="email" class="form-control" value="{{ usuario.email }}" disabled>
+            </div>
+        </div>
+        
+        {{ form.as_p }}
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña Antigua</label>
+            <input type="password" name="nueva_contrasena" class="form-control"
+                placeholder="Contraseña Antigua"
+                autocomplete="off" readonly
+                onfocus="this.removeAttribute('readonly');"
+                onpaste="return false;" ondrop="return false;">
+        </div>
+        
+        <div class = "row">
+            <div class=" col-md-6  mb-3">
+                <label class="form-label">Contraseña Nueva</label>
+                <input type="password" name="confirmar_contrasena_nueva" class="form-control"
+                    placeholder="Contraseña Nueva"
+                    autocomplete="off" readonly
+                    onfocus="this.removeAttribute('readonly');"
+                    onpaste="return false;" ondrop="return false;">
+            </div>
+            <div class="col-md-6  mb-3">
+                <label class="form-label">Confirmar Contraseña Nueva</label>
+                <input type="password" name="confirmar_contrasena" class="form-control"
+                    placeholder="Confirmar contraseña nueva"
+                    autocomplete="off" readonly
+                    onfocus="this.removeAttribute('readonly');"
+                    onpaste="return false;" ondrop="return false;">
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        </div>
+    </form>
+    {% if error_message %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_message }}
+        </div>
+    {% endif %}
+    
+        
+
+
+    
+
+    <div class="text-start mt-5">
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+
+</div>
+
+
+
+
+{% endblock %}

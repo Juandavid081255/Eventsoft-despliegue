@@ -1,0 +1,83 @@
+{% extends 'dashboard_principal_evaluador.html' %}
+{% load static %}
+
+{% block title %}Listado de Participantes{% endblock %}
+
+{% block content %}
+    <div class="container mt-4 mb-5">
+        <h2 class="text-center mb-4 contenedor">Participantes del Evento: {{ evento.eve_nombre }}</h2>
+
+        <form method="get" class="row g-3 my-5">
+            <div class="col-md-10">
+                <input type="text" name="q" class="form-control" placeholder="Buscar por cédula, nombre o apellido" value="{{ query|default_if_none:'' }}">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="." class="btn btn-secondary">Limpiar</a>
+            </div>
+        </form>
+
+
+        <div class="row m-5">
+            <div class="col-md-4">
+                <div class="btn-success text-center p-2 rounded">
+                    <strong>Aprobados:</strong> {{ conteo_aprobados }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="btn-warning text-center p-2 rounded">
+                    <strong>Pendientes:</strong> {{ conteo_pendientes }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="btn-danger text-center p-2 rounded">
+                    <strong>Rechazados:</strong> {{ conteo_rechazados }}
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        {% if participantes %}
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Cédula</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Admisión</th>
+                    <th>Documento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for participante in participantes %}
+                <tr>
+                    <td class="text-center">{{ participante.cedula }}</td>
+                    <td>{{ participante.nombre }}</td>
+                    <td>{{ participante.apellido }}</td>
+                    <td>{{ participante.correo }}</td>
+                    <td>{{ participante.telefono }}</td>
+                    <td>{{ participante.par_eve_estado }}</td>
+                    <td class="text-center">
+                        {% if participante.documento_url %}
+                            <a href="{{ participante.documento_url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver documento</a>
+                        {% else %}
+                            <span class="text-muted">Sin documento</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info text-center">No hay participantes inscritos en este evento.</div>
+        {% endif %}
+        <div class="text-start mt-5">
+            <a href="{% url 'dashboard_evaluador' %}" class="btn btn-secondary">Volver al Inicio</a>
+        </div>
+    </div>
+{% endblock %}

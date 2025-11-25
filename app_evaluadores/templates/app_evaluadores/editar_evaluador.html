@@ -1,0 +1,136 @@
+{% extends 'dashboard_principal_evaluador.html' %}
+{% load static %}
+
+{% block title %}Editar Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="text-center px-5  contenedor">Editar Mis Datos y Documento</h2>
+
+    <form method="post" enctype="multipart/form-data" class="p-4 rounded border shadow bg-light">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Cédula:</label>
+            <input type="text" class="form-control" value="{{ usuario.cedula }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Correo:</label>
+            <input type="email" class="form-control" value="{{ usuario.email }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nombre de usuario:</label>
+            <input type="text" class="form-control" value="{{ usuario.username }}" disabled>
+        </div>
+        
+        {{ form.as_p }}
+
+        <hr>
+
+        <!-- mostrar todos los soportes de pago -->
+        <div class="mb-3 text-center">
+            <h4 class="form-label my-5">Documentos de Certificaciones</h4>
+            <ul class="list-group">
+                {% for r in todas_relaciones %}
+                    <li class="list-group-item d-flex justify-content-center align-items-center">
+                        <div>
+                            <div class="mb-5">
+                                <strong>Evento:</strong> {{ r.eva_eve_evento_fk.eve_nombre }}<br>
+                                <strong>Estado:</strong> {{ r.eva_eve_estado }}
+                            </div>
+
+                            {% if r.eva_eve_documento %}
+                                <a href="{{ r.eva_eve_documento.url }}" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
+                                    Ver documento
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No cargado aún</span>
+                            {% endif %}
+                            
+                            
+                            <!-- Input solo visible si NO está aprobado -->
+                            {% if r.eva_eve_estado != "Aprobado" %}
+                                <div class="mb-3 mt-2">
+                                    <label class="form-label">Actualizar documento:</label>
+                                    <input type="file" name="eva_eve_documento_{{ r.id }}" class="form-control" accept=".pdf">
+                                </div>
+                            {% else %}
+                                <p class="text-success mt-3">
+                                    <strong>✅ Ya aprobado, no es necesario editar el documento.</strong>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña Antigua</label>
+            <input type="password" name="nueva_contrasena" class="form-control"
+                placeholder="Contraseña Antigua"
+                autocomplete="off" readonly
+                onfocus="this.removeAttribute('readonly');"
+                onpaste="return True;" ondrop="return false;">
+        </div>
+        
+        <div class = "row">
+            <div class=" col-md-6  mb-3">
+                <label class="form-label">Contraseña Nueva</label>
+                <input type="password" name="confirmar_contrasena_nueva" class="form-control"
+                    placeholder="Contraseña Nueva"
+                    autocomplete="off" readonly
+                    onfocus="this.removeAttribute('readonly');"
+                    onpaste="return false;" ondrop="return false;">
+            </div>
+            <div class="col-md-6  mb-3">
+                <label class="form-label">Confirmar Contraseña Nueva</label>
+                <input type="password" name="confirmar_contrasena" class="form-control"
+                    placeholder="Confirmar contraseña nueva"
+                    autocomplete="off" readonly
+                    onfocus="this.removeAttribute('readonly');"
+                    onpaste="return false;" ondrop="return false;">
+            </div>
+        </div>
+
+
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+    </form>
+
+    <hr class ="mt-5">
+
+    <div class ="text-center m-4"  >
+        <a href="{% url 'eliminar_evaluador' evaluador.id %}" 
+        class="btn btn-danger btn-sm"
+        onclick="return confirm('¿Estás seguro de que deseas eliminar este evaluador? Esta acción no se puede deshacer.');">
+            Eliminar mis datos
+        </a>
+    </div>
+
+    <p class="text-muted mt-3">
+        Al hacer clic en <strong>"Eliminar mis datos"</strong>, se eliminará permanentemente tu cuenta como evaluador, así como todas las relaciones con los eventos en los que estás inscrito. Esta acción no se puede deshacer.
+    </p>
+    <hr class="mt-5">
+
+
+    
+
+    <div class="text-start mt-5">
+        <a href="{% url 'dashboard_evaluador' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+
+</div>
+
+
+
+
+
+
+{% endblock %}

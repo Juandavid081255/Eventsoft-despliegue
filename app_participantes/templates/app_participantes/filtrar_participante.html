@@ -1,0 +1,183 @@
+{% extends 'dashboard_principal_participante.html' %}
+{% load static %}
+
+{% block title %}Filtrar Participante{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+
+        <!-- =================================== -->
+        <!-- 1. BÚSQUEDA POR CÉDULA DE PARTICIPANTE -->
+        <!-- =================================== -->
+        <div class="col-md-5">
+            <h3 class="text-center my-4 p-3 contenedor">Buscar participante por cédula</h3>
+
+            <form method="get" action="{% url 'vista_filtrar_id_participante' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="filtro_participante_id"></label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="filtro_participante_id" 
+                        name="filtro_participante_id" 
+                        placeholder="Cédula del participante: Ej: 12345678" 
+                        required
+                    >
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+                </div>
+            </form>
+
+            {% if participante %}
+                <div class="mt-5">
+                    <h4 class="text-center pb-3"><strong>Detalles del Participante</strong></h4>
+                    <div class="card p-4">
+                        <p><strong>Nombre:</strong> {{ participante.par_nombre }}</p>
+                        <p><strong>Correo:</strong> {{ participante.par_correo }}</p>
+                        <p><strong>Teléfono:</strong> {{ participante.par_telefono }}</p>
+                        <p><strong>Evento:</strong> {{ evento.eve_nombre }}</p>
+                        <p>
+                            <strong>Estado de preinscripción:</strong>
+                            <span class="text-primary">{{ estado|upper }}</span>
+                        </p>
+
+                        {% if clave %}
+                            <p><strong>Clave de acceso:</strong> {{ clave }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% elif error %}
+                <p class="text-danger mt-4">{{ error }}</p>
+            {% endif %}
+        </div>
+
+        <!-- =================================== -->
+        <!-- 2. BÚSQUEDA POR CLAVE DE PARTICIPANTE -->
+        <!-- =================================== -->
+        <div class="col-md-7">
+            <h3 class="text-center my-4 p-3 contenedor">Acceder a evento con clave</h3>
+
+            <form method="get" action="{% url 'vista_filtrar_clave_participante' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="clave_acceso_participante"></label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="clave_acceso_participante" 
+                        name="clave_acceso_participante" 
+                        placeholder="Clave de acceso al evento: Ej: j4lfm34n5f" 
+                        required
+                    >
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-outline-primary">Acceder</button>
+                </div>
+            </form>
+
+            {% if participante_clave %}
+                <div class="mt-5">
+                    <h4 class="text-center pb-3"><strong>Detalles del Evento</strong></h4>
+                    <div class="card p-3">
+                        <!-- Nombre del Evento -->
+                        <h4 class="text-center p-4"><strong>Nombre:</strong> {{ evento.eve_nombre }}</h4>
+
+                        <div class="row">
+                            <!-- Columna izquierda con imagen y datos básicos -->
+                            <div class="col-md-6">
+                                {% if evento.eve_imagen %}
+                                    <div class="row justify-content-center contenedor">
+                                        <div class="col-12">
+                                            <img 
+                                                src="{{ evento.eve_imagen.url }}" 
+                                                alt="Imagen del evento {{ evento.eve_nombre }}" 
+                                                class="img-fluid rounded" 
+                                                style="max-width: 100%; height: auto;"
+                                            >
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <p><strong>Ciudad:</strong> {{ evento.eve_ciudad }}</p>
+                                <p><strong>Lugar:</strong> {{ evento.eve_lugar }}</p>
+                                <p><strong>Fecha de inicio:</strong> {{ evento.eve_fecha_inicio|date:"d M Y" }}</p>
+                                <p><strong>Fecha de fin:</strong> {{ evento.eve_fecha_fin|date:"d M Y" }}</p>
+                                <p><strong>Estado:</strong> {{ evento.eve_estado }}</p>
+                                <p><strong>Costo:</strong> {{ evento.eve_tienecosto }}</p>
+                            </div>
+
+                            <!-- Columna derecha con descripción y programación -->
+                            <div class="col-md-6">
+                                <p class="mt-5"><strong>Descripción:</strong> {{ evento.eve_descripcion }}</p>
+                                <hr>
+                                <div class="text-center">
+                                    {% if evento.eve_programacion %}
+                                        <a 
+                                            href="{{ evento.eve_programacion.url }}" 
+                                            target="_blank" 
+                                            class="btn btn-info mt-3"
+                                        >
+                                            Previsualizar programación
+                                        </a>
+                                        <a 
+                                            href="{{ evento.eve_programacion.url }}" 
+                                            download 
+                                            class="btn btn-info mt-3"
+                                        >
+                                            Descargar programación
+                                        </a>
+                                    {% else %}
+                                        <p class="text-muted">Programación no disponible</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- QR de acceso -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% if participante_clave.par_eve_qr %}
+                                    <div class="text-center">
+                                        <p><strong>QR de acceso:</strong></p>
+                                        <div class="row justify-content-center">
+                                            <div class="col-6">
+                                                <img 
+                                                    src="{{ participante_clave.par_eve_qr.url }}" 
+                                                    alt="QR acceso {{ evento.eve_nombre }}" 
+                                                    class="img-fluid rounded" 
+                                                    style="max-width: 100%; height: auto;"
+                                                >
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <a 
+                                                href="{{ participante_clave.par_eve_qr.url }}" 
+                                                download 
+                                                class="btn btn-outline-info"
+                                            >
+                                                Descargar QR
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% elif error_clave %}
+                <p class="text-danger mt-4">{{ error_clave }}</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="my-5 text-start">
+        <a href="{% url 'pagina_principal' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

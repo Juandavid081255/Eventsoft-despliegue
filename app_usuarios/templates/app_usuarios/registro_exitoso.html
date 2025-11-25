@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Enviado</title>
+    <style>
+        body {
+            margin-block: 400px;
+            padding: 0;
+            background: linear-gradient(135deg, #e9f5ff, #ffffff);
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-wrapper {
+            height: 100vh;
+            background: #f1f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 900px;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+            background-color: #fff;
+        }
+
+        .login-image {
+            background: linear-gradient(to bottom, #4cd137, #006400);
+            flex: 1 1 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .login-image img {
+            max-width: 100%;
+            max-height: 300px;
+        }
+
+        .login-box {
+            flex: 1 1 60%;
+            padding: 40px;
+            text-align: center;
+            background-color: #d3d3d3;
+        }
+
+        .login-box h2 {
+            font-weight: 700;
+            color: #155724;
+            margin-bottom: 1rem;
+            font-size: 24px;
+        }
+
+        .login-box p {
+            font-size: 16px;
+            color: #343a40;
+            margin-bottom: 2rem;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                flex-direction: column;
+                max-width: 95%;
+            }
+            .login-image {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="login-image">
+            <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" alt="Éxito">
+        </div>
+        <div class="login-box">
+            <h2>✅ Registro enviado correctamente</h2>
+            <p>Tu solicitud fue recibida. Debes esperar la aprobación del SuperAdmin antes de poder acceder.</p>
+            <a href="/" class="btn-success">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

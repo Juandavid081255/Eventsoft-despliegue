@@ -1,0 +1,95 @@
+{% extends 'dashboard_principal_asistente.html' %}
+{% load static %}
+
+{% block title %}Acceso al evento{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor text-center mb-5">Acceso al evento {{ evento.eve_nombre }}</h2>
+
+    <!-- Estado de inscripción y evento -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <strong>Estado del evento:</strong> {{ evento.eve_estado }}<br>
+                <strong>Estado de tu inscripción:</strong> {{ estado }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <!-- CLAVE DE ACCESO (siempre visible) -->
+        <div class="col-md-4 d-flex align-items-stretch">
+            <div class="card w-100 text-center shadow-sm p-5 mb-5">
+                {% if asistente.asi_eve_clave %}
+                    <h5 class="mb-3">Clave de acceso:</h5>
+                    <p class="border rounded p-4 bg-light fs-4">
+                        <strong>{{ asistente.asi_eve_clave }}</strong>
+                    </p>
+                    <p class="text-muted mt-5">En caso de que el QR no funcione por dicho motivo, puedes usar la clave de acceso para acceder al evento.</p>
+                {% else %}
+                    <p class="text-muted">No hay clave de acceso disponible.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- QR DE ACCESO (SOLO si mostrar_qr es True y estado es Aprobado) -->
+        {% if mostrar_qr %}
+            <div class="col-md-4 d-flex align-items-stretch">
+                <div class="card w-100 text-center shadow-sm p-5 mb-5">
+                    {% if asistente.asi_eve_qr %}
+                        <h5 class="mb-3">QR de acceso:</h5>
+                        <img src="{{ asistente.asi_eve_qr.url }}" alt="QR acceso {{ evento.eve_nombre }}" class="img-fluid rounded mb-3" style="max-width: 200px; height: auto; margin: auto;">
+                        <a href="{{ asistente.asi_eve_qr.url }}" download class="btn btn-outline-success w-100">Descargar QR</a>
+                    {% else %}
+                        <p class="text-muted">No hay QR disponible.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <!-- Mensaje si NO está aprobado -->
+            <div class="col-md-4 d-flex align-items-stretch">
+                <div class="card w-100 text-center shadow-sm p-5 mb-5 bg-warning">
+                    <h5 class="mb-3">QR de acceso:</h5>
+                    <p class="text-dark">
+                        Tu inscripción está en estado <strong>{{ estado }}</strong>.<br>
+                        El QR solo estará disponible cuando tu inscripción sea <strong>APROBADA</strong>.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- SOPORTE DE PAGO (siempre visible si existe) -->
+        <div class="col-md-4 d-flex align-items-stretch">
+            <div class="card w-100 text-center shadow-sm p-5 mb-5">
+                {% if asistente.asi_eve_soporte %}
+                    <h5 class="mb-3">Tu soporte de pago:</h5>
+                    <img src="{{ asistente.asi_eve_soporte.url }}" alt="Soporte pago {{ evento.eve_nombre }}" class="img-fluid rounded mb-3" style="max-width: 200px; height: auto; margin: auto;">
+                    <a href="{{ asistente.asi_eve_soporte.url }}" download class="btn btn-outline-info w-100">Descargar soporte</a>
+                {% else %}
+                    <p class="text-muted">No hay soporte disponible.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- CANCELAR INSCRIPCIÓN -->
+        <div class="col-md-4 d-flex align-items-stretch">
+            <div class="card w-100 text-center shadow-sm p-5 mb-5">
+                <form action="{% url 'cancelar_inscripcion_asistente' evento.id %}" method="post" class="w-100">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger w-100" 
+                            onclick="return confirm('¿Estás seguro de cancelar tu inscripción a este evento?');">
+                        Cancelar inscripción a este evento
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-start mt-5">
+        <a href="{% url 'dashboard_asistente' %}" class="btn btn-outline-secondary mt-3">Volver al inicio</a>
+    </div>
+</div>
+
+{% endblock %}

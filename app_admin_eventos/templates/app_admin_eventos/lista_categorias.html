@@ -1,0 +1,71 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %} Lista de Categorías {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Categorías</h2>
+
+    <!-- Botón crear categoría -->
+    <div class="mb-3">
+        <a href="{% url 'crear_categoria_area' %}" class="btn btn-success">➕ Crear Categoría</a>
+    </div>
+
+    <!-- Filtro por área -->
+    <form method="get" class="mb-4">
+        <label for="area">Filtrar por Área:</label>
+        <select name="area" id="area" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+            <option value="">-- Todas las áreas --</option>
+            {% for area in areas %}
+                <option value="{{ area.id }}" {% if area_seleccionada == area.id|stringformat:"s" %}selected{% endif %}>
+                    {{ area.are_nombre }}
+                </option>
+            {% endfor %}
+        </select>
+        <noscript><button type="submit" class="btn btn-primary btn-sm">Filtrar</button></noscript>
+    </form>
+
+    <!-- Tabla de categorías -->
+    {% if categorias %}
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Categoría</th>
+                    <th>Descripción Categoría</th>
+                    <th>Área</th>
+                    <th>Descripción Área</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ categoria.cat_nombre }}</td>
+                    <td>{{ categoria.cat_descripcion }}</td>
+                    <td>{{ categoria.cat_area_fk.are_nombre }}</td>
+                    <td>{{ categoria.cat_area_fk.are_descripcion }}</td>
+                    <td>
+                        <form method="post" action="{% url 'eliminar_categoria' categoria.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Seguro que deseas eliminar esta categoría?');">
+                                🗑 Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning">
+            No hay categorías registradas para este filtro.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary mt-5">Volver al Inicio</a>
+</div>
+{% endblock %}

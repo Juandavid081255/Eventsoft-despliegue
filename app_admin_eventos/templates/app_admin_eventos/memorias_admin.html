@@ -1,0 +1,65 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="contenedor text-center">📚 Memorías: {{ evento.eve_nombre }}</h1>
+
+  <!-- Formulario subida -->
+  <div class="caja-mv my-5">
+    <div class="card-body">
+      <form
+        action="{% url 'memorias_admin' evento.id %}"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Nombre de la memoria</label>
+          <input type="text" name="nombre" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Archivo</label>
+          <input type="file" name="archivo" accept=".pdf,.zip,.pptx" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-outline-success">Subir Memoria</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de memorias -->
+<div class="row row-cols-1 row-cols-md-2 g-3">
+  {% for m in memorias %}
+    <div class="col">
+      <div class="card shadow-sm p-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ m.nombre }}</h5>
+          <p class="text-muted small">Subido: {{ m.subido_en|date:"Y-m-d H:i" }}</p>
+
+          <!-- Descargar -->
+          <a href="{{ m.archivo.url }}" class="btn btn-outline-success" download>
+            <i class="bi bi-download me-1"></i> Descargar
+          </a>
+
+          <!-- Borrar -->
+          <form action="{% url 'borrar_memoria_admin' evento.id m.id %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger"
+              onclick="return confirm('¿Seguro que deseas eliminar esta memoria?')">
+              <i class="bi bi-trash me-1"></i> Borrar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">Aún no hay memorias subidas.</p>
+  {% endfor %}
+</div>
+
+<div class="text-end pt-5">
+    <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary">Volver al Inicio</a>
+</div>
+
+</div>
+{% endblock %}

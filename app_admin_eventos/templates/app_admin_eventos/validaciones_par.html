@@ -1,0 +1,1130 @@
+{% extends 'validaciones_par_asi_eva.html' %}
+{% load static %}
+
+{% block title %}Validación Participantes{% endblock %}
+
+{% block validar %}
+<div class="container-fluid px-4 py-3">
+    <!-- Header Section -->
+    <div class="header-section mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="page-title">
+                    <i class="fas fa-user-check me-3"></i>
+                    Validación de Participantes
+                </h1>
+                <p class="page-subtitle mb-0">
+                    Evento: <span class="fw-bold text-success">{{ evento.eve_nombre }}</span>
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="stats-card">
+                    <span class="stats-number">{{ participantes|length }}</span>
+                    <span class="stats-label">Registros</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section mb-4">
+        <div class="border-0 shadow-sm">
+            
+            <div class="card-body text-center">
+                <form method="get" class="row">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Buscar por nombre, apellido o cédula</label>
+                        <div class="input-group">
+                            <input type="text" name="query" class="form-control" 
+                                   placeholder="Escriba para buscar..." value="{{ query }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Filtrar por estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="Pendiente" {% if estado == "Pendiente" %}selected{% endif %}>
+                                Pendiente
+                            </option>
+                            <option value="Aprobado" {% if estado == "Aprobado" %}selected{% endif %}>
+                                Aprobado
+                            </option>
+                            <option value="Rechazado" {% if estado == "Rechazado" %}selected{% endif %}>
+                                Rechazado
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 m-3 ">
+                        <div class="w-100">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-search me-1"></i>Filtrar
+                            </button>
+                            <a href="?" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Participants Table -->
+    <div class="participants-section">
+        <div class="shadow-sm">
+            <div class="caja-info text-white text-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Lista de Participantes
+                </h5>
+            </div>
+            <div class=" p-0">
+                {% if participantes %}
+                    <div class="table-responsive">
+                        <table class="table mb-0 participants-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th class="text-center" style="width: 120px;">Tipo</th>
+                                    <th style="width: 250px;">Participante Principal</th>
+                                    <th style="width: 200px;">Contacto</th>
+                                    <th style="width: 300px;">Información del Grupo</th>
+                                    <th class="text-center" style="width: 120px;">Documentos</th>
+                                    <th class="text-center" style="width: 100px;">Estado</th>
+                                    <th class="text-center" style="width: 180px;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in participantes %}
+                                    <tr class="participant-row {% if p.es_grupo %}group-row{% else %}individual-row{% endif %}">
+                                        <!-- Tipo de participación -->
+                                        <td class="text-center">
+                                            {% if p.es_grupo %}
+                                                <div class="participation-badge group-badge">
+                                                    <i class="fas fa-users"></i>
+                                                    <span>GRUPO</span>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <code class="project-code">{{ p.codigo_proyecto }}</code>
+                                                </div>
+                                            {% else %}
+                                                <div class="participation-badge individual-badge">
+                                                    <i class="fas fa-user"></i>
+                                                    <span>INDIVIDUAL</span>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Información principal del participante -->
+                                        <td>
+                                            <div class="participant-info">
+                                                <div class="participant-name">
+                                                    {% if p.es_grupo %}
+                                                        <i class="fas fa-crown leader-icon"></i>
+                                                    {% endif %}
+                                                    <strong>{{ p.nombre }} {{ p.apellido }}</strong>
+                                                </div>
+                                                <div class="participant-details">
+                                                    <div class="detail-item">
+                                                        <i class="fas fa-id-card text-muted"></i>
+                                                        CC: {{ p.cedula }}
+                                                    </div>
+                                                    {% if p.es_grupo %}
+                                                        <div class="detail-item text-success">
+                                                            <i class="fas fa-star"></i>
+                                                            Líder del Grupo
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Información de contacto -->
+                                        <td>
+                                            <div class="contact-info">
+                                                <div class="contact-item">
+                                                    <i class="fas fa-envelope text-primary"></i>
+                                                    <span class="contact-text">{{ p.correo }}</span>
+                                                </div>
+                                                <div class="contact-item">
+                                                    <i class="fas fa-phone text-success"></i>
+                                                    <span class="contact-text">{{ p.telefono|default:"No especificado" }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Información del grupo -->
+                                        <td>
+                                            {% if p.es_grupo %}
+                                                <div class="group-info ">
+                                                    <div class="group-summary">
+                                                        <span class="member-count-badge">
+                                                            <i class="fas fa-users"></i>
+                                                            {{ p.total_miembros }} miembro{{ p.total_miembros|pluralize }}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <div class="members-container mt-2">
+                                                        <button class="btn btn-sm btn-outline-info members-toggle" 
+                                                                data-bs-toggle="collapse" 
+                                                                data-bs-target="#members-{{ p.id }}" 
+                                                                aria-expanded="false">
+                                                            <i class="fas fa-eye"></i>
+                                                            Ver Miembros
+                                                        </button>
+                                                        
+                                                        <div class="collapse mt-2" id="members-{{ p.id }}">
+                                                            <div class="members-list">
+                                                                {% for miembro in p.miembros %}
+                                                                    <div class="member-item {% if miembro.es_lider %}leader-item{% endif %}">
+                                                                        <div class="member-info">
+                                                                            {% if miembro.es_lider %}
+                                                                                <i class="fas fa-crown leader-icon"></i>
+                                                                            {% else %}
+                                                                                <i class="fas fa-user member-icon"></i>
+                                                                            {% endif %}
+                                                                            <span class="member-name">{{ miembro.nombre }}</span>
+                                                                            {% if miembro.es_lider %}
+                                                                                <span class="badge bg-warning text-dark">Líder</span>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                        <small class="member-id">{{ miembro.cedula }}</small>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-center text-muted">
+                                                    <i class="fas fa-minus"></i>
+                                                    <span>Participación individual</span>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Documentación -->
+                                        <td class="text-center">
+                                            {% if p.documentos %}
+                                                <a href="{{ p.documentos.url }}" target="_blank" 
+                                                   class="btn btn-sm btn-outline-success document-btn">
+                                                    <i class="fas fa-file-pdf"></i>
+                                                    <span>Ver PDF</span>
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted no-document">
+                                                    <i class="fas fa-file-slash"></i>
+                                                    Sin documento
+                                                </span>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Estado -->
+                                        <td class="text-center">
+                                            {% if p.estado == 'Aprobado' %}
+                                                <span class="status-badge status-approved">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Aprobado
+                                                </span>
+                                            {% elif p.estado == 'Rechazado' %}
+                                                <span class="status-badge status-rejected">
+                                                    <i class="fas fa-times-circle"></i>
+                                                    Rechazado
+                                                </span>
+                                            {% else %}
+                                                <span class="status-badge status-pending">
+                                                    <i class="fas fa-clock"></i>
+                                                    Pendiente
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Acciones -->
+                                        <td class="text-center">
+                                            <div class="action-buttons">
+                                                {% if p.estado == 'Pendiente' %}
+                                                    <button type="button" class="btn btn-sm btn-success approve-btn" 
+                                                            data-participant-id="{{ p.id }}"
+                                                            data-participant-name="{{ p.nombre }} {{ p.apellido }}"
+                                                            data-is-group="{% if p.es_grupo %}true{% else %}false{% endif %}"
+                                                            data-member-count="{{ p.total_miembros }}"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#approveModal">
+                                                        <i class="fas fa-check"></i>
+                                                        Aprobar
+                                                    </button>
+                                                    
+                                                    <button type="button" class="btn btn-sm btn-danger reject-btn" 
+                                                            data-participant-id="{{ p.id }}"
+                                                            data-participant-name="{{ p.nombre }} {{ p.apellido }}"
+                                                            data-is-group="{% if p.es_grupo %}true{% else %}false{% endif %}"
+                                                            data-member-count="{{ p.total_miembros }}"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#rejectModal">
+                                                        <i class="fas fa-times"></i>
+                                                        Rechazar
+                                                    </button>
+                                                {% else %}
+                                                    <div class="action-info">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-info-circle"></i>
+                                                            Ya procesado
+                                                        </small>
+                                                        {% if p.qr %}
+                                                            <button type="button" class="btn btn-sm btn-outline-info mt-1" 
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#qrModal" 
+                                                                    onclick="mostrarQR('{{ p.qr.url }}')">
+                                                                <i class="fas fa-qrcode"></i>
+                                                                Ver QR
+                                                            </button>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-users-slash"></i>
+                        </div>
+                        <h4>No hay participantes registrados</h4>
+                        <p class="text-muted">
+                            No se encontraron participantes que coincidan con los filtros aplicados.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="approveModalLabel">
+                    <i class="fas fa-check-circle me-2"></i>Confirmar Aprobación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <div class="modal-icon bg-success">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <p class="modal-message text-center"></p>
+                <div class="alert alert-info" id="groupApproveAlert" style="display: none;">
+                    <strong>Importante:</strong> Al aprobar este grupo, todos los miembros serán aprobados automáticamente y recibirán correos de notificación individuales.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="#" id="approveLink" class="btn btn-success">
+                    <i class="fas fa-check me-1"></i>Confirmar Aprobación
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="rejectModalLabel">
+                    <i class="fas fa-times-circle me-2"></i>Confirmar Rechazo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <div class="modal-icon bg-danger">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+                <p class="modal-message text-center"></p>
+                <div class="alert alert-warning" id="groupRejectAlert" style="display: none;">
+                    <strong>Atención:</strong> Al rechazar este grupo, todos los miembros serán rechazados automáticamente y recibirán correos de notificación.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="#" id="rejectLink" class="btn btn-danger">
+                    <i class="fas fa-times me-1"></i>Confirmar Rechazo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Modal -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrModalLabel">
+                    <i class="fas fa-qrcode me-2"></i>Código QR de Acceso
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="qrImage" src="" alt="QR" class="img-fluid qr-image">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Section -->
+<div class="info-section mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="alert alert-info border-0">
+                <h6><i class="fas fa-info-circle me-2"></i>Información del Sistema de Validación</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="mb-0">
+                            <li><strong>Grupos:</strong> La aprobación/rechazo del líder afecta a todos los miembros</li>
+                            <li><strong>Correos:</strong> Cada miembro recibe notificación individual personalizada</li>
+                            <li><strong>QR:</strong> Se genera un código único para cada persona</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="mb-0">
+                            <li><strong>Estados:</strong> Todos los miembros de un grupo tienen el mismo estado</li>
+                            <li><strong>Códigos:</strong> Cada grupo tiene un identificador único</li>
+                            <li><strong>Documentos:</strong> Solo el líder carga la documentación del proyecto</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <div class="stat-value">{{ participantes|length }}</div>
+                    <div class="stat-label">Total Registros</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                        {% for p in participantes %}{% if p.es_grupo %}1{% endif %}{% empty %}0{% endfor %}
+                    </div>
+                    <div class="stat-label">Grupos</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                        {% for p in participantes %}{% if not p.es_grupo %}1{% endif %}{% empty %}0{% endfor %}
+                    </div>
+                    <div class="stat-label">Individuales</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-start pt-5">
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary m-1">Volver al Inicio</a>
+    </div>
+
+<style>
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+    --border-color: #dee2e6;
+    --text-muted: #6c757d;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color), #0b5ed7);
+}
+
+/* Header Styles */
+.header-section {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-radius: 15px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+.stats-card {
+    background: white;
+    border: 2px solid var(--success-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stats-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.stats-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Card Styles */
+.card {
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0;
+    padding: 1.25rem 1.5rem;
+}
+
+/* Table Styles */
+.participants-table {
+    font-size: 0.9rem;
+}
+
+.participant-row {
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+.participant-row:hover {
+    background-color: #f8f9fa;
+    border-left-color: var(--success-color);
+}
+
+.group-row {
+    background: linear-gradient(90deg, #fff9e6, #ffffff);
+}
+
+/* Participation Badges */
+.participation-badge {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    min-width: 80px;
+}
+
+.group-badge {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.individual-badge {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+}
+
+.project-code {
+    background: #343a40;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+}
+
+/* Participant Info */
+.participant-info {
+    padding: 0.5rem 0;
+}
+
+.participant-name {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.leader-icon {
+    color: #ffc107;
+    margin-right: 0.5rem;
+}
+
+.participant-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-item {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Contact Info */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.contact-text {
+    font-size: 0.85rem;
+    word-break: break-word;
+}
+
+/* Group Info */
+.group-info {
+    padding: 0.5rem;
+}
+
+.member-count-badge {
+    background: var(--warning-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.members-list {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.75rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.member-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 6px;
+    background: white;
+    border: 1px solid var(--border-color);
+}
+
+.leader-item {
+    background: linear-gradient(135deg, #fff3cd, #fef7e0);
+    border-color: var(--warning-color);
+}
+
+.member-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.member-icon {
+    color: var(--text-muted);
+}
+
+.member-name {
+    font-weight: 500;
+}
+
+.member-id {
+    color: var(--text-muted);
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-approved {
+    background: #007e39;
+    color: #ffffff;
+    border: 1px solid #bee5eb;
+}
+
+.status-rejected {
+    background: #79111a;
+    color: #ffffff;
+    border: 1px solid #f5c6cb;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.approve-btn, .reject-btn {
+    min-width: 90px;
+    font-weight: bold;
+}
+
+.document-btn {
+    padding: 0.375rem 0.75rem;
+}
+
+.no-document {
+    font-size: 0.85rem;
+}
+
+/* Modal Styles */
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.qr-image {
+    max-width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* Stats Summary */
+.stats-summary {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border-color);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .participants-table {
+        font-size: 0.8rem;
+    }
+    
+    .participation-badge {
+        min-width: 70px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .stats-summary {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .stat-divider {
+        width: 100%;
+        height: 1px;
+    }
+    
+    .action-buttons {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .approve-btn, .reject-btn {
+        min-width: auto;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .participants-table th,
+    .participants-table td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+    
+    .participant-row {
+        font-size: 0.75rem;
+    }
+    
+    .member-count-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+    }
+    
+    .contact-text {
+        font-size: 0.75rem;
+    }
+}
+
+/* Animation Effects */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.participant-row {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.participant-row:nth-child(even) {
+    animation-delay: 0.1s;
+}
+
+.participant-row:nth-child(odd) {
+    animation-delay: 0.05s;
+}
+
+/* Loading States */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Hover Effects */
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Focus States */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Custom Scrollbar */
+.members-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.members-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.members-list::-webkit-scrollbar-thumb {
+    background: var(--success-color);
+    border-radius: 10px;
+}
+
+.members-list::-webkit-scrollbar-thumb:hover {
+    background: #0b5ed7;
+}
+
+/* Print Styles */
+@media print {
+    .filters-section,
+    .action-buttons,
+    .back-section,
+    .info-section {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .participants-table {
+        font-size: 10px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Modales de confirmación
+    const approveModal = document.getElementById('approveModal');
+    const rejectModal = document.getElementById('rejectModal');
+    const approveMessage = approveModal.querySelector('.modal-message');
+    const rejectMessage = rejectModal.querySelector('.modal-message');
+    const approveLink = document.getElementById('approveLink');
+    const rejectLink = document.getElementById('rejectLink');
+    const groupApproveAlert = document.getElementById('groupApproveAlert');
+    const groupRejectAlert = document.getElementById('groupRejectAlert');
+
+    // Manejar botones de aprobación
+    document.querySelectorAll('.approve-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const participantId = this.dataset.participantId;
+            const participantName = this.dataset.participantName;
+            const isGroup = this.dataset.isGroup === 'true';
+            const memberCount = this.dataset.memberCount;
+
+            if (isGroup) {
+                approveMessage.innerHTML = `
+                    ¿Estás seguro de que deseas aprobar el <strong>grupo liderado por ${participantName}</strong>?
+                    <br><small class="text-muted">Esta acción afectará a ${memberCount} miembro${memberCount > 1 ? 's' : ''} del grupo.</small>
+                `;
+                groupApproveAlert.style.display = 'block';
+            } else {
+                approveMessage.innerHTML = `
+                    ¿Estás seguro de que deseas aprobar a <strong>${participantName}</strong>?
+                `;
+                groupApproveAlert.style.display = 'none';
+            }
+
+            approveLink.href = `{% url 'aprobar_par' evento.id 0 %}`.replace('0', participantId);
+        });
+    });
+
+    // Manejar botones de rechazo
+    document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const participantId = this.dataset.participantId;
+            const participantName = this.dataset.participantName;
+            const isGroup = this.dataset.isGroup === 'true';
+            const memberCount = this.dataset.memberCount;
+
+            if (isGroup) {
+                rejectMessage.innerHTML = `
+                    ¿Estás seguro de que deseas rechazar el <strong>grupo liderado por ${participantName}</strong>?
+                    <br><small class="text-muted">Esta acción afectará a ${memberCount} miembro${memberCount > 1 ? 's' : ''} del grupo.</small>
+                `;
+                groupRejectAlert.style.display = 'block';
+            } else {
+                rejectMessage.innerHTML = `
+                    ¿Estás seguro de que deseas rechazar a <strong>${participantName}</strong>?
+                `;
+                groupRejectAlert.style.display = 'none';
+            }
+
+            rejectLink.href = `{% url 'rechazar_par' evento.id 0 %}`.replace('0', participantId);
+        });
+    });
+
+    // Función para mostrar QR
+    window.mostrarQR = function(url) {
+        const qrImage = document.getElementById('qrImage');
+        qrImage.src = url;
+    };
+
+    // Animación de carga inicial
+    const rows = document.querySelectorAll('.participant-row');
+    rows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateY(30px)';
+        setTimeout(() => {
+            row.style.transition = 'all 0.5s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateY(0)';
+        }, index * 50);
+    });
+
+    // Mejorar experiencia de botones de toggle
+    document.querySelectorAll('.members-toggle').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            
+            if (isExpanded) {
+                icon.className = 'fas fa-eye-slash';
+                this.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Miembros';
+            } else {
+                icon.className = 'fas fa-eye';
+                this.innerHTML = '<i class="fas fa-eye"></i> Ver Miembros';
+            }
+        });
+    });
+
+    // Filtros dinámicos
+    const searchInput = document.querySelector('input[name="query"]');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.participant-row');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    // Confirmaciones con loading states
+    document.querySelectorAll('.approve-btn, .reject-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Agregar estado de loading después de la confirmación
+            setTimeout(() => {
+                this.classList.add('btn-loading');
+                this.disabled = true;
+            }, 100);
+        });
+    });
+
+    // Tooltips para elementos truncados
+    document.querySelectorAll('.contact-text').forEach(element => {
+        if (element.scrollWidth > element.clientWidth) {
+            element.title = element.textContent;
+        }
+    });
+
+    // Auto-refresh cada 30 segundos para actualizaciones en tiempo real
+    let autoRefreshEnabled = false;
+    if (autoRefreshEnabled) {
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                location.reload();
+            }
+        }, 30000);
+    }
+
+    // Búsqueda en tiempo real mejorada
+    let searchTimeout;
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                // Aquí podrías implementar búsqueda AJAX si fuera necesario
+                console.log('Búsqueda:', this.value);
+            }, 500);
+        });
+    }
+});
+
+// Función para exportar datos (opcional)
+function exportParticipants() {
+    const table = document.querySelector('.participants-table');
+    const csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+        const cols = row.querySelectorAll('th, td');
+        const rowData = [];
+        cols.forEach(col => rowData.push(col.textContent.trim()));
+        csv.push(rowData.join(','));
+    });
+    
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'participantes.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Información técnica del evento{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">INFORMACIÓN TÉCNICA DEL EVENTO</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-info text-center mt-3">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if evento.eve_informacion_tecnica %}
+        <div class="border rounded p-4 shadow-sm jumbotron">
+            <div class="text-center">
+                <p><strong>Archivo cargado:</strong></p>
+
+                <!-- Botón para ver el archivo -->
+                <div class="mb-2 ">
+                    <a href="{{ evento.eve_informacion_tecnica.url }}" target="_blank" class="btn btn-outline-primary mb-5 w-50">
+                        Ver archivo
+                    </a>
+                </div>
+
+
+                <!-- Botón para eliminar el archivo -->
+                <div class="mt-2">
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="eliminar_archivo" class="btn btn-danger"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar el archivo?');">
+                            Eliminar archivo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% else %}
+
+        <!-- Formulario para cargar si no hay archivo -->
+        <div class="mt-4">
+            <form method="post" enctype="multipart/form-data" class="border rounded p-4 shadow-sm">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="informacion_tecnica" class="form-label">Cargar archivo PDF:</label>
+                    <input type="file" name="informacion_tecnica" id="informacion_tecnica" class="form-control" accept=".pdf" required>
+                </div>
+                <button type="submit" class="btn btn-outline-success">Subir información técnica</button>
+            </form>
+        </div>
+    {% endif %}
+
+
+    <div class="text-start mt-4">
+        <a href="{% url 'dashboard_admin'%}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+
+
+</div>
+
+
+    
+{% endblock %}

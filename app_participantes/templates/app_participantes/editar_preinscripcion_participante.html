@@ -1,0 +1,139 @@
+{% extends 'dashboard_principal_participante.html' %}
+{% load static %}
+
+{% block title %}Editar Preinscripción{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="text-center px-5  contenedor">Editar Mis Datos y Documento</h2>
+
+    <form method="post" enctype="multipart/form-data" class="p-4 rounded border shadow bg-light" id="formEdicionParticipante">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Cédula:</label>
+            <input type="text" class="form-control" value="{{ usuario.cedula }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Correo:</label>
+            <input type="email" class="form-control" value="{{ usuario.email }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nombre de usuario:</label>
+            <input type="text" class="form-control" value="{{ usuario.username }}" disabled>
+        </div>
+
+        {{ form.as_p }}
+
+        <hr>
+
+        <div class="mb-3 text-center">
+            <h4 class="form-label my-5">Documento de Exposición (Proyecto: {{ relacion_principal.par_eve_codigo_proyecto }})</h4>
+            
+            {% with r=relacion_principal %}
+            <div class="border p-4 mb-3 rounded shadow-sm bg-white">
+                <p>
+                    <strong>Evento:</strong> {{ r.par_eve_evento_fk.eve_nombre }}<br>
+                    <strong>Estado:</strong> 
+                    {% if r.par_eve_estado == "Aprobado" %}
+                        <span class="badge bg-success m-4 p-2">Aprobado ✅</span>
+                    {% elif r.par_eve_estado == "Pendiente" %}
+                        <span class="badge bg-warning text-dark m-4 p-2">Pendiente</span>
+                    {% else %}
+                        <span class="badge bg-danger m-4 p-2">Rechazado ❌</span>
+                    {% endif %}
+                </p>
+
+                {% if r.par_eve_documentos %}
+                    <a href="{{ r.par_eve_documentos.url }}" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
+                        Ver documento actual
+                    </a>
+                {% else %}
+                    <span class="text-muted">Documento no cargado aún</span>
+                {% endif %}
+                
+                <hr class="my-3">
+
+                {% if es_lider_del_proyecto and r.par_eve_estado != "Aprobado" %}
+                    <div class="mb-3 mt-2">
+                        <label class="form-label text-start d-block">Subir / Actualizar documento (PDF):</label>
+                        <input type="file" name="par_eve_documentos" class="form-control" accept=".pdf" {% if r.par_eve_documentos %}aria-describedby="ayudaArchivo"{% endif %}>
+                        {% if r.par_eve_documentos %}
+                        <div id="ayudaArchivo" class="form-text">Al subir un nuevo archivo, el anterior será reemplazado.</div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    {% if r.par_eve_estado == "Aprobado" %}
+                        <p class="text-success mt-3">
+                            <strong>✅ Documento aprobado. Edición bloqueada.</strong>
+                        </p>
+                    {% elif not es_lider_del_proyecto %}
+                        <p class="text-info mt-3">
+                            Solo el <strong>líder del proyecto</strong> puede subir o actualizar el documento.
+                        </p>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endwith %}
+        </div>
+
+        <hr>
+
+        <h4 class="text-center my-5">Cambio de Contraseña (Opcional)</h4>
+        
+        <div class="mb-3">
+            <label class="form-label">Contraseña Antigua</label>
+            <input type="password" name="contrasena_actual" class="form-control"
+                placeholder="Contraseña Antigua"
+                autocomplete="off" readonly
+                onfocus="this.removeAttribute('readonly');"
+                onpaste="return false;" ondrop="return false;">
+        </div>
+        
+        <div class = "row">
+            <div class=" col-md-6  mb-3">
+                <label class="form-label">Contraseña Nueva</label>
+                <input type="password" name="confirmar_contrasena_nueva" class="form-control"
+                    placeholder="Contraseña Nueva"
+                    autocomplete="off" readonly
+                    onfocus="this.removeAttribute('readonly');"
+                    onpaste="return false;" ondrop="return false;">
+            </div>
+            <div class="col-md-6  mb-3">
+                <label class="form-label">Confirmar Contraseña Nueva</label>
+                <input type="password" name="confirmar_contrasena" class="form-control"
+                    placeholder="Confirmar contraseña nueva"
+                    autocomplete="off" readonly
+                    onfocus="this.removeAttribute('readonly');"
+                    onpaste="return false;" ondrop="return false;">
+            </div>
+        </div>
+
+
+        <div class="text-center m-5">
+            <button type="submit" class="btn btn-outline-success">Guardar Cambios</button>
+        </div>
+    </form>
+
+    <hr class ="mt-5">
+
+    <div class ="text-center m-4"  >
+        <a href="{% url 'eliminar_participante' participante.id %}" 
+        class="btn btn-danger btn-sm"
+        onclick="return confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.');">
+            Eliminar mis datos
+        </a>
+    </div>
+
+    <p class="text-muted mt-3">
+        Al hacer clic en **"Eliminar mis datos"**, se eliminará permanentemente tu cuenta como participante, así como todas las relaciones con los eventos en los que estás inscrito.
+    </p>
+    <hr class="mt-5">
+
+    <div class="text-start mt-5">
+        <a href="{% url 'dashboard_participante' %}" class="btn btn-secondary  mt-3">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

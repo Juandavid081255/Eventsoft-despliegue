@@ -1,0 +1,63 @@
+{% extends 'dashboard_principal_evaluador.html' %}
+{% load static %}
+
+{% block title %}Podio de Participantes{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">PODIO PARTICIPANTES</h2>
+
+    {% if participantes %}
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr class="table-warning text-center">
+                        <th>Puesto #</th>
+                        <th>Nombre del Participante</th>
+                        <th>Calificación</th>
+                        <th>Ver notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for participante in participantes %}
+                        <tr>
+                            <td>
+                                {% if forloop.counter == 1 %}
+                                    <span class="badge badge-warning">🥇</span>
+                                {% elif forloop.counter == 2 %}
+                                    <span class="badge badge-secondary">🥈</span>
+                                {% elif forloop.counter == 3 %}
+                                    <span class="badge badge-bronze">🥉</span>
+                                {% else %}
+                                    {{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td>{{ participante.nombre_limpio }} {{ participante.apellido_limpio }}</td>
+
+
+                            <td>{{ participante.calificacion }}</td>
+                            <td>
+                                {% if participante.participante.id %}
+                                    <a href="{% url 'ver_detalle_calificacion' evento.id participante.participante.id %}">
+                                        Ver detalle
+                                    </a>
+                                {% else %}
+                                    Sin datos
+                                {% endif %}
+                            </td>
+
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No hay participantes calificados para este evento.</p>
+    {% endif %}
+
+    <div class="text-start pt-5">
+        <a href="{% url 'dashboard_evaluador' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

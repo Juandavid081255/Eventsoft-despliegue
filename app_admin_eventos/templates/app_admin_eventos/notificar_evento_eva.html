@@ -1,0 +1,83 @@
+{% extends 'notificar_evento_par_asi_eva.html' %}
+{% load static %}
+
+{% block title %}Notificación Evaluadores{% endblock %}
+
+{% block notificar %}
+<h4 class="mb-3">Selecciona los <strong>Evaluadores</strong> a notificar</h4>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <label for="filtro_estado" class="fw-bold me-2">Filtrar por estado:</label>
+        <select id="filtro_estado" class="form-select d-inline-block w-auto">
+            <option value="Todos">Todos</option>
+            <option value="Aprobado">Aprobado</option>
+            <option value="Pendiente">Pendiente</option>
+        </select>
+    </div>
+</div>
+
+<form method="post" action="{% url 'notificar_eva' evento.id %}">
+    {% csrf_token %}
+
+    <table class="table table-bordered table-striped align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th><input type="checkbox" id="select_all"></th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="tabla_evaluadores">
+            {% for rel in evaluadores %}
+                <tr data-estado="{{ rel.eva_eve_estado }}">
+                    <td><input type="checkbox" name="evaluadores" value="{{ rel.id }}"></td>
+                    <td>{{ rel.eva_eve_evaluador_fk.usuario.get_full_name }}</td>
+                    <td>{{ rel.eva_eve_evaluador_fk.usuario.email }}</td>
+                    <td>
+                        {% if rel.eva_eve_estado == 'Aprobado' %}
+                            <span class="badge bg-success">{{ rel.eva_eve_estado }}</span>
+                        {% elif rel.eva_eve_estado == 'Pendiente' %}
+                            <span class="badge bg-warning text-dark">{{ rel.eva_eve_estado }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">
+                        No hay evaluadores registrados en este evento.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mb-3">
+        <label for="mensaje" class="form-label fw-bold">Mensaje</label>
+        <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-send"></i> Enviar notificación
+    </button>
+</form>
+
+<script>
+// ✅ Seleccionar todos
+document.getElementById('select_all').addEventListener('click', function() {
+    document.querySelectorAll('input[name="evaluadores"]').forEach(cb => cb.checked = this.checked);
+});
+
+// ✅ Filtro de estado dinámico
+document.getElementById('filtro_estado').addEventListener('change', function() {
+    const estadoSeleccionado = this.value;
+    document.querySelectorAll('#tabla_evaluadores tr').forEach(row => {
+        const estado = row.getAttribute('data-estado');
+        row.style.display = (estadoSeleccionado === 'Todos' || estado === estadoSeleccionado)
+            ? ''
+            : 'none';
+    });
+});
+</script>
+{% endblock %}

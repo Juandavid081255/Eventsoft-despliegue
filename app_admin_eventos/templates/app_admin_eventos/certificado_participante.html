@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificado de Participación</title>
+  <style>
+    body { font-family: 'Times New Roman', serif; text-align: center; background: #fff; }
+    h1 { font-size: 42px; margin: 0; }
+    h2 { font-size: 22px; margin: 10px 0 40px; }
+    .name { font-size: 38px; font-family: "Brush Script MT", cursive; margin: 20px 0; }
+    .message { font-size: 18px; margin: 30px 0; }
+    .footer { margin-top: 60px; display: flex; justify-content: space-between; padding: 0 80px; }
+    .signature { border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px; }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>CERTIFICADO</h1>
+    <h2>DE PARTICIPACIÓN</h2>
+
+    <p>Se otorga el presente certificado a:</p>
+    <p class="name">{{ persona }}</p>
+
+    <p class="message">
+      Por su valiosa participación en el evento <b>{{ evento.eve_nombre }}</b><br>
+      realizado en {{ evento.eve_lugar }} el día {{ evento.eve_fecha_fin }}.
+    </p>
+
+    <div class="footer">
+      <div class="signature">Firma Organizador</div>
+      <div class="signature">Firma Director</div>
+    </div>
+  </div>
+</body>
+</html>

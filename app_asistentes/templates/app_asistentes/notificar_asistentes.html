@@ -1,0 +1,178 @@
+{% extends 'dashboard_principal_asistente.html' %}
+{% load static %}
+
+{% block title %}Enviar Notificación a Asistentes{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor text-center mb-5">Enviar Notificación - {{ evento.eve_nombre }}</h2>
+
+    <!-- Mensajes de error o éxito -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-10">
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Información del evento -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-10">
+            <div class="alert alert-info">
+                <strong>Evento:</strong> {{ evento.eve_nombre }}<br>
+                <strong>Fecha:</strong> {{ evento.eve_fecha_inicio }} - {{ evento.eve_fecha_fin }}<br>
+                <strong>Total de inscritos:</strong> {{ inscripciones.count }} asistente(s)
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de notificación -->
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm p-5 mb-5">
+                <form method="post" class="needs-validation">
+                    {% csrf_token %}
+
+                    <!-- Selección de asistentes -->
+                    <div class="mb-4">
+                        <label for="asistentes" class="form-label fw-bold">
+                            <span class="text-danger">*</span> Selecciona Asistentes:
+                        </label>
+                        <select id="asistentes" name="asistentes" multiple class="form-control" size="8" required>
+                            {% if inscripciones %}
+                                {% for inscripcion in inscripciones %}
+                                    <option value="{{ inscripcion.id }}">
+                                        {{ inscripcion.asi_eve_asistente_fk.usuario.get_full_name }} 
+                                        ({{ inscripcion.asi_eve_estado }})
+                                    </option>
+                                {% endfor %}
+                            {% else %}
+                                <option disabled>No hay asistentes inscritos</option>
+                            {% endif %}
+                        </select>
+                        <small class="form-text text-muted">
+                            Mantén presionado <kbd>Ctrl</kbd> (o <kbd>Cmd</kbd> en Mac) para seleccionar múltiples asistentes.
+                        </small>
+                    </div>
+
+                    <!-- Mensaje -->
+                    <div class="mb-4">
+                        <label for="mensaje" class="form-label fw-bold">
+                            <span class="text-danger">*</span> Mensaje:
+                        </label>
+                        <textarea 
+                            id="mensaje" 
+                            name="mensaje" 
+                            class="form-control" 
+                            rows="6" 
+                            placeholder="Escribe el mensaje que deseas enviar a los asistentes seleccionados..."
+                            required></textarea>
+                        <small class="form-text text-muted">
+                            El mensaje será enviado por correo electrónico a todos los asistentes seleccionados.
+                        </small>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-paper-plane"></i> Enviar Notificación
+                        </button>
+                        <a href="{% url 'dashboard_asistente' %}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de asistentes inscritos (referencia) -->
+    {% if inscripciones %}
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-10">
+                <h5 class="mb-4">Asistentes Inscritos en el Evento</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Estado</th>
+                                <th>Fecha de Inscripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inscripcion in inscripciones %}
+                                <tr>
+                                    <td>{{ inscripcion.asi_eve_asistente_fk.usuario.get_full_name }}</td>
+                                    <td>{{ inscripcion.asi_eve_asistente_fk.usuario.email }}</td>
+                                    <td>
+                                        {% if inscripcion.asi_eve_estado == 'Aprobado' %}
+                                            <span class="badge bg-success">{{ inscripcion.asi_eve_estado }}</span>
+                                        {% elif inscripcion.asi_eve_estado == 'Pendiente' %}
+                                            <span class="badge bg-warning text-dark">{{ inscripcion.asi_eve_estado }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ inscripcion.asi_eve_estado }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ inscripcion.asi_eve_fecha_hora|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-10">
+                <div class="alert alert-warning text-center">
+                    No hay asistentes inscritos en este evento aún.
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Volver -->
+    <div class="text-start mt-5">
+        <a href="{% url 'dashboard_asistente' %}" class="btn btn-outline-secondary mt-3">
+            <i class="fas fa-arrow-left"></i> Volver al inicio
+        </a>
+    </div>
+</div>
+
+<style>
+    .contenedor {
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+    
+    .form-control {
+        border-radius: 0.375rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+    
+    .badge {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+</style>
+
+{% endblock %}

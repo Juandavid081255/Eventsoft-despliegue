@@ -1,0 +1,131 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Encabezado -->
+  <div class="text-center mb-4">
+    <h1 class="display-5">Enviar Certificados</h1>
+    <p class="lead text-muted">Evento: <strong>{{ evento.eve_nombre }}</strong></p>
+    <p class="text-success">
+      Los certificados se generarán automáticamente con la plantilla prediseñada.
+    </p>
+  </div>
+
+  <!-- Botones de selección de tipo -->
+  <div class="d-flex justify-content-center mb-4 flex-wrap">
+    <button type="button" class="btn btn-outline-success m-2" onclick="mostrarOpciones('participantes')">
+      <i class="bi bi-people-fill me-1"></i> Participantes
+    </button>
+    <button type="button" class="btn btn-outline-success m-2" onclick="mostrarOpciones('evaluadores')">
+      <i class="bi bi-person-badge-fill me-1"></i> Evaluadores
+    </button>
+    <button type="button" class="btn btn-outline-success m-2" onclick="mostrarOpciones('asistentes')">
+      <i class="bi bi-person-lines-fill me-1"></i> Asistentes
+    </button>
+  </div>
+
+  <!-- Card del formulario -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form action="{% url 'certificados_admin' evento.id %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" id="tipo_persona" name="tipo_persona">
+        <input type="hidden" id="evento_id" value="{{ evento.id }}">
+
+        <!-- Lista dinámica -->
+        <div id="lista-personas" class="mb-4">
+          <p class="text-muted">Selecciona un grupo arriba para cargar la lista.</p>
+        </div>
+
+        <!-- Botón de envío -->
+        <div class="d-grid">
+          <button type="submit" class="btn btn-warning btn-lg">
+            <i class="bi bi-envelope-fill me-2"></i> Enviar Certificados
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Script AJAX -->
+<!-- Script AJAX -->
+<script>
+  const urlCargar = "{% url 'cargar_personas' %}";
+  const urlPrevisualizar = "{% url 'previsualizar_certificado' evento.id 'TIPO' 0 %}";
+  // NOTA: el "TIPO" y "0" se reemplazan dinámicamente en JS
+
+  function mostrarOpciones(tipo) {
+    const eventoId = document.getElementById("evento_id").value;
+    const cont = document.getElementById("lista-personas");
+
+    // Spinner mientras carga
+    cont.innerHTML = `
+      <div class="text-center my-4">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Cargando ${tipo}...</p>
+      </div>
+    `;
+
+    fetch(`${urlCargar}?tipo=${tipo}&evento_id=${eventoId}`, {
+      credentials: 'same-origin'
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      cont.innerHTML = `<h5 class="mb-3 text-capitalize">${tipo}</h5>`;
+
+      if (data.personas.length === 0) {
+        cont.innerHTML += `<p class="text-muted fst-italic">No hay ${tipo} en este evento.</p>`;
+        return;
+      }
+
+      let html = '<div class="row row-cols-1 row-cols-md-2 g-3">';
+      data.personas.forEach(p => {
+        // construyo la URL de previsualización reemplazando los valores
+        let preUrl = urlPrevisualizar
+          .replace("TIPO", tipo)
+          .replace("0", p.id);
+
+        html += `
+          <div class="col">
+            <div class="border rounded-3 p-3 shadow-sm h-100 bg-light">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="personas" value="${p.id}" id="p${p.id}">
+                <label class="form-check-label fw-semibold" for="p${p.id}">
+                  ${p.nombre}<br>
+                  <small class="text-muted">${p.correo}</small>
+                </label>
+              </div>
+              <div class="mt-2 text-end">
+                <a href="${preUrl}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                  👀 Previsualizar
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      cont.innerHTML = html;
+
+      document.getElementById("tipo_persona").value = tipo;
+    })
+    .catch(err => {
+      console.error("Error cargando personas:", err);
+      cont.innerHTML = `
+        <div class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle"></i>
+          Error al cargar ${tipo}. Intenta nuevamente.
+        </div>
+      `;
+    });
+  }
+</script>
+
+{% endblock %}

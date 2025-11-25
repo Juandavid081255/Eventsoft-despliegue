@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Info Evento{% endblock %}
+
+{% block content %}
+
+
+<div class="container mt-5 mb-5">
+    <div class="carta mb-3">
+        <div class ="row md-6 p-4">
+            <div class="col-md-5 d-flex justify-content-center align-items-center">
+                <img src="{{ evento.eve_imagen.url }}" alt="{{ evento.eve_nombre }}" class="contenedor card img-fluid rounded-4 mb-2 evento-img" style="max-width: 300px; height: auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);">
+            </div>
+            <div class="col-md-1 d-flex justify-content-center">
+                <div class="vr" style="height: 100%; width: 1px; background-color: #ccc;"></div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="card-body ">
+                    <h2 class="card-title pb-4">{{ evento.eve_nombre }}</h2>
+                    <p class="card-text pb-3">{{ evento.eve_descripcion }}</p>
+                    <hr>
+                    <div class="row pb-3">
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Ciudad:</strong> {{ evento.eve_ciudad }}</small></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Lugar:</strong> {{ evento.eve_lugar }}</small></p>
+                        </div>
+                    </div>
+                    <div class="row pb-3">
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Fecha de Inicio:</strong> {{ evento.eve_fecha_inicio|date:"d M Y" }}</small></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Fecha de Fin:</strong> {{ evento.eve_fecha_fin|date:"d M Y" }}</small></p>
+                        </div>
+                    </div>
+                    <div class="row pb-3">
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Capacidad:</strong> {{ evento.eve_capacidad }} personas</small></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Estado Costo:</strong> {{ evento.eve_tienecosto }}</small></p>
+                        </div>
+                    </div>
+                    <div class="row pb-3">
+                        <div class="col-md-6">
+                            <p class="card-text"><small ><strong>Estado:</strong> {{ evento.eve_estado }}</small></p>
+                        </div>
+                    </div>
+                </div>
+                    <small class=" text-center">
+                        
+                        <br>
+                        <br>
+                        <div class="row justify-content-center pb-4">
+                            <strong>Programación:</strong>
+                            <br>
+                            <br>
+                            <div class="col-md-12 text-center">
+                            {% if evento.eve_programacion %}
+                                <a href="{{ evento.eve_programacion.url }}" target="_blank" class="btn btn-outline-success ">Ver programación</a>
+                                <button class="btn btn-outline-dark btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalCompartir">
+                                        <i class="bi bi-share-fill "></i> Compartir
+                                 </button>
+                            {% else %}
+                                No disponible
+                            {% endif %}
+                            </div>
+                        </div>
+                    </small> 
+                </div>
+            </div>
+            
+        </div>  
+        {% if evento.eve_estado == 'Publicado' and evento.eve_capacidad > 0 %}
+
+        <div class="pt-2">            
+            <div class="col-md-12 text-center pt-3">
+                <a
+                    href="{% if evento.eve_estado != 'Finalizado' and evento.preinscripcion_habilitada_asistentes != 1 %}{% url 'crear_asistente' evento.id %}{% else %}#{% endif %}"
+                    class="btn btn-outline-success mt-3 {% if evento.eve_estado == 'Finalizado' or evento.preinscripcion_habilitada_asistentes == 1 %}disabled{% endif %}">
+                    Preinscripción como Asistente
+                </a>
+                {% if evento.preinscripcion_habilitada_asistentes == 1 %}
+                    <div class=" p-1 ">
+                        <p class="text-danger"><small>Acción actualmente deshabilitada.</small></p>
+                    </div>
+                {% endif %}
+
+                <div class="pt-5">
+                    <p>
+                        <small class="text-muted">El Asistente es quien simplemente asiste al evento como público. Va a observar, escuchar o disfrutar del evento, sin participar activamente ni exponer nada.
+                            <br> La preinscripción como asistente está sujeta a aprobación por parte del organizador del evento, solo si es un evento de pago.
+                        </small>
+                    </p>
+                </div>
+            </div>
+            <hr class="mt-4">
+            <div class ="text-center pt-3">
+                {% block preins %} 
+                <a href="{% url 'preinscripcion_avanzada' evento.id %}" class="text-center btn btn-success">Preinscripcion avanzada para Exponentes y evaluadores</a>
+                {% endblock %}
+            </div>
+            
+        </div>
+        
+
+        {% elif evento.eve_estado == 'Publicado' and evento.eve_capacidad == 0 %}
+
+        <div class="pt-2">
+            <h2 class="p-2 contenedor">INFORMACIÓN DEL EVENTO</h2>
+            <div class="row pt-2 ">
+                <div class="col-md-12 text-center">
+                    <p class="text-danger mb-5 alert-info p-2">Este evento no tiene cupos disponibles.</p>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+
+        <div class="row pt-4">
+            <div class="col-md-12 text-center">
+                <h4 class="text-danger alert-danger text-center m-2 p-1 rounded">EVENTO FINALIZADO</h4>
+                <a href="#" class="btn btn-info mt-5">Descargar certificado</a>
+            </div>
+        </div>
+
+        {% endif %}
+
+
+        <div class="text-start pt-5">
+            <a href="{% url 'pagina_principal' %}" class="btn btn-outline-secondary mt-3">Volver al inicio</a>
+        </div>
+        </div>     
+    </div>
+</div>
+
+
+
+
+
+<!-- Modal Compartir -->
+ <!-- MODAL COMPARTIR -->
+<div class="modal fade" id="modalCompartir" tabindex="-1" aria-labelledby="modalCompartirLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCompartirLabel">Compartir evento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body d-flex flex-column gap-3">
+
+        <!-- Copiar enlace -->
+        <div class="d-flex">
+          <input type="text" id="enlaceEvento" class="form-control me-2"
+                 value="{{ request.build_absolute_uri }}" readonly>
+          <button class="btn btn-outline-secondary" onclick="copiarEnlace()">
+            <i class="bi bi-clipboard"></i>
+          </button>
+        </div>
+        <p class="text-muted small text-center mt-2">
+          Copia el enlace o compártelo directamente:
+        </p>
+
+        
+
+        <!-- Enlaces a redes -->
+        <div class="d-flex justify-content-around">
+          <a class="btn btn-success" target="_blank"
+             href="https://wa.me/?text={{ request.build_absolute_uri|urlencode }}">
+            <i class="bi bi-whatsapp me-1"></i> WhatsApp
+          </a>
+          <a class="btn btn-primary" target="_blank"
+             href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}">
+            <i class="bi bi-facebook me-1"></i> Facebook
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function copiarEnlace() {
+    const enlace = document.getElementById("enlaceEvento");
+    enlace.select();
+    enlace.setSelectionRange(0, 99999); // Para móviles
+    document.execCommand("copy");
+    alert("Enlace copiado al portapapeles");
+  }
+</script>
+
+
+{% endblock %}

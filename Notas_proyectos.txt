@@ -1,0 +1,9 @@
+Edicion de certificados y diseño
+notificar a los roles de algun problema acerca del evento
+modelo, cambiar duplicidad de cedulas que la persona pueda preinscribirse a varios eventos, pero si se preinscribe a un evento genera duplicidad
+enviar codigo de acceso a los administradores de eventos.
+
+
+
+Eliminar el apartado de que el evento se elimina en 30 dias habiles ya  
+

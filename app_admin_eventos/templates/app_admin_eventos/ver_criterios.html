@@ -1,0 +1,42 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Criterios de Evaluación{% endblock %}
+
+{% block content %}
+
+{% if criterios %}
+
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">CRITERIOS</h2>
+    <h3 class="text-center pb-5">Criterios de Evaluación para el Evento: {{ evento.eve_nombre }}</h3>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Descripción</th>
+                <th>Peso (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for criterio in criterios %}
+            <tr>
+                <td>{{ criterio.cri_descripcion }}</td>
+                <td>{{ criterio.cri_peso }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-warning text-center">
+        No se han definido criterios para este evento.
+    </div>
+{% endif %}
+
+
+<div class="pt-5 text-end">
+    <a href="{% url 'ver_criterios' evento.id %}" class="btn btn-secondary">Atrás</a>
+</div>  
+
+
+
+{% endblock %}

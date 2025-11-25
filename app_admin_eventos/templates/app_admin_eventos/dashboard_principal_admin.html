@@ -1,0 +1,454 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <title>{% block title %} {% endblock %} Admin-Eventos | Event-Soft</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid d-flex justify-content-between align-items-center">
+                    <!-- Logo y nombre -->
+                    <div class="d-flex align-items-center">
+                        <img src="{% static 'img/favicon.png' %}" alt="favicon" class="img-fluid" style="width: 50px; height: 50px; margin-right: 10px;">
+                        <a class="navbar-brand fw-bold" href="{% url 'dashboard_admin' %}" style="font-size: 1.7rem; color: white;">Event-Soft</a>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Nombre del administrador -->
+                        {% if request.resolver_match.url_name == 'dashboard_admin' and request.session.admin_id %}
+                            <a class="nav-link fw-bold text-white" href="{% url 'editar_administrador' request.session.admin_id %}">
+                                Editar Perfil <i class="bi bi-pencil-square"></i>
+                            </a>
+                        {% endif %}
+
+                        
+
+
+                            
+
+                        <!-- Nombre del administrador -->
+                        <a class="nav-link fw-bold text-white">
+                            🟢 Administrador {{ request.session.admin_nombre }}
+                        </a>
+                        <!-- Cerrar Sesión -->
+                        <a class="nav-link fw-bold text-white d-flex align-items-center" href="{% url 'logout_view' %}">
+                            Cerrar Sesión <i class="bi bi-box-arrow-right mx-2"></i> 
+                        </a>
+
+                        
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+
+<!-- ########################################################################################################## -->
+
+
+<main class="mb-5">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success text-center alert-fixed-top" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}
+        <section class="contenedor-mv caja-info">
+            <div class="text-center  caja-mv p-4 ">
+                <p>Acá puedes encontrar el manual de uso de la plataforma</p>
+                <a href="{% static 'manuales/Administrador-Eventos.pdf' %}" target="_blank" 
+                    class="btn btn-sm btn-outline-success document-btn">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Manual de uso</span>
+                </a>
+            </div>
+        </section>
+
+
+        <div class="text-center contenedor-mv p-4 mb-4">
+            <div class="col mb-3">
+                <a href="{% url 'crear_categoria_area' %}" class="btn btn-success w-100">Crear Área y Categoría</a>
+            </div>
+        </div>
+
+
+
+        {% if eventos|length == 0 %}
+            <div class="alert alert-info text-center contenedor-mv " role="alert">
+                No tienes eventos creados. Por favor, crea un evento para comenzar a gestionarlo.
+            </div>
+        {% endif %}
+
+        
+
+
+        {% for evento in eventos %}
+            <div class="contenedor-mv caja-info mb-5">
+                <div class="caja-mv p-4">
+                    <div class="row no-gutters">
+                        <div class="col-md-5 d-flex flex-column justify-content-around align-items-center p-3">
+                            <div class="text-center">
+                                <img src="{{ evento.eve_imagen.url }}" alt="{{ evento.eve_nombre }}" class="img-fluid rounded mb-3" style="max-width: 100%; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);">
+                            </div>
+                        </div>
+
+                        <div class="col-md-7 p-4">
+                            <h2 class="card-title">{{ evento.eve_nombre }}</h2>
+                            <p>{{ evento.eve_descripcion|slice:":500" }}{% if evento.eve_descripcion|length > 500 %}...{% endif %}</p>
+
+                            <div class="row align-items-center py-2">
+                                <div class="col-md-5 d-flex align-items-center justify-content-center">
+                                    <div class="fecha">
+                                        <div class="dia">{{ evento.eve_fecha_inicio|date:"D" }}</div>
+                                        <div class="numero">{{ evento.eve_fecha_inicio|date:"d" }}</div>
+                                        <div class="mes">{{ evento.eve_fecha_inicio|date:"M Y" }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center">
+                                    <p><strong>Ciudad: </strong> {{ evento.eve_ciudad }}</p>
+                                    <p><strong>Lugar: </strong> {{ evento.eve_lugar }}</p>
+                                    <p><strong>Costo: </strong> {{ evento.eve_tienecosto }}</p>
+                                    <p><strong>Cupos: </strong> {{ evento.eve_capacidad }}</p>
+                                </div>
+                            </div>
+
+                            <div class="alert-secondary text-white p-3 rounded">
+                                <div class="info d-flex flex-column align-items-center 
+                                    {% if evento.eve_estado == 'Cancelado' or evento.eve_estado == 'Finalizado' %}
+                                        text-danger
+                                    {% else %}
+                                        text-success
+                                    {% endif %}">
+                                    <h2>{{ evento.eve_estado }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="col mb-3">
+                            <a href="{% url 'editar_evento' evento.id %}" class="btn btn-primary w-100"><i class="bi bi-pencil-square"></i> Editar evento</a>
+                        </div>
+                        <div class="col mb-3">
+                            <a href="{% url 'ver_info_evento_admin' evento.id %}" class="btn btn-warning w-100"><i class="bi bi-info-square"></i> Ver Información</a>
+                        </div>
+                        
+                        <div class="col mb-3">
+                            <a href="{% url 'cancelar_evento_page' evento.id %}" class="btn btn-danger w-100"><i class="bi bi-x-circle"></i> Cancelar evento</a>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h3 class="text-center">Acciones</h3>
+
+                        <div class="accordion m-4" id="accionesAccordion">
+
+                            <!-- Notificaciones -->
+                        <div class="accordion-item p-3">
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNotificaciones">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>🔔 Notificaciones</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            <div id="collapseNotificaciones" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                            <div class="accordion-body text-center">
+                                <a href="{% url 'notificar_evento' evento.id %}" class="btn btn-outline-success w-50"> <i class="bi bi-bell"></i> Notificar</a>
+                                <p class="mt-2 text-muted small">Notificar a los asistentes, exponentes y evaluadores, sobre cambios o información del evento.</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Validaciones -->
+                        <div class="accordion-item p-3">
+                            
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseValidaciones">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>✅ Validaciones</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+
+                            
+                            <div id="collapseValidaciones" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                            <div class="accordion-body text-center">
+                                <a href="{% url 'validaciones' evento.id %}" class="btn btn-outline-success w-50"><i class="bi bi-check2-circle"></i> Ir a Validaciones</a>
+                                <p class="mt-2 text-muted small">Gestiona y valida la asistencia de los participantes.</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Criterios -->
+                        <div class="accordion-item p-3">
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCriterios">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>📊 Crear Criterios</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            <div id="collapseCriterios" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                            <div class="accordion-body text-center">
+                                <a href="{% url 'ver_criterios' evento.id %}" class="btn btn-outline-success w-50"> <i class="bi bi-card-checklist"></i> Ir a Criterios</a>
+                                <p class="mt-2 text-muted small">Define los criterios de evaluación del evento.</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Certificados -->
+                        <div class="accordion-item p-3">
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCertificados">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>🎓 Enviar Certificados</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            
+                            <div id="collapseCertificados" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                            <div class="accordion-body text-center">
+                                <a href="{% url 'certificados_admin' evento.id %}" class="btn btn-outline-success w-50">Ir a Certificados</a>
+                                <p class="mt-2 text-muted small">Envía certificados automáticos a los asistentes.</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Estadísticas -->
+                        <div class="accordion-item p-3">
+                            
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEstadisticas">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>📈 Ver Estadísticas</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            <div id="collapseEstadisticas" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                            <div class="accordion-body text-center">
+                                <a href="{% url 'estadisticas_evento' evento.id %}" class="btn btn-outline-success w-50">Ir a Estadísticas</a>
+                                <p class="mt-2 text-muted small">Visualiza métricas y reportes del evento.</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Premiación -->
+                        <div class="accordion-item p-3">
+                            
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePremiacion">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>🏆 Premiación</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            <div id="collapsePremiacion" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                            <div class="accordion-body text-center">
+                                <a href="{% url 'premiacion_admin' evento.id %}" class="btn btn-outline-success w-50">
+                                <i class="bi bi-award-fill me-1"></i> Ir a Premiación
+                                </a>
+                                <p class="mt-2 text-muted small">Organiza la premiación de los mejores participantes.</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Memorías -->
+                        <div class="accordion-item p-3">
+                            
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMemorias">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>📂 Memorías</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            <div id="collapseMemorias" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                                <div class="accordion-body text-center">
+                                    <a href="{% url 'memorias_admin' evento.id %}" class="btn btn-outline-success w-50">
+                                    <i class="bi bi-folder-fill me-1"></i> Ir a Memorías
+                                    </a>
+                                    <p class="mt-2 text-muted small">Accede y gestiona documentos y archivos del evento.</p>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+    
+
+                        <!-- Preinscripción Evaluador, Participantes, Asistentes -->
+                        <div class="accordion-item p-3">
+                            
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePreEvaluador">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>🚷 Inhabilitar/Habilitar Preinscripciónes</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            <div id="collapsePreEvaluador" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                            <div class="accordion-body text-center">
+                                <form action="{% url 'cambiar_preinscripcion_evaluador' evento.id %}" method="post">
+                                {% csrf_token %}
+                                {% if evento.preinscripcion_habilitada_evaluadores %}
+                                    <button type="submit" name="accion" value="habilitar" class="btn btn-outline-success w-50">Habilitar Preinscripción Evaluador</button>
+                                {% else %}
+                                    <button type="submit" name="accion" value="inhabilitar" class="btn btn-outline-warning w-50">Inhabilitar Preinscripción Evaluador</button>
+                                {% endif %}
+                                </form>
+                                <p class="mt-2 text-muted small">Activa o desactiva la Preinscripción de evaluadores.</p>
+
+                            
+                                <form action="{% url 'cambiar_preinscripcion_participante' evento.id %}" method="post">
+                                {% csrf_token %}
+                                {% if evento.preinscripcion_habilitada_participantes %}
+                                    <button type="submit" name="accion" value="habilitar" class="btn btn-outline-success w-50">Habilitar Preinscripción Participante</button>
+                                {% else %}
+                                    <button type="submit" name="accion" value="inhabilitar" class="btn btn-outline-warning w-50">Inhabilitar Preinscripción Participante</button>
+                                {% endif %}
+                                </form>
+                                <p class="mt-2 text-muted small">Gestiona el registro de participantes al evento.</p>
+
+                                <form action="{% url 'cambiar_preinscripcion_asistente' evento.id %}" method="post">
+                                {% csrf_token %}
+                                {% if evento.preinscripcion_habilitada_asistentes %}
+                                    <button type="submit" name="accion" value="habilitar" class="btn btn-outline-success w-50">Habilitar Preinscripción Asistente</button>
+                                {% else %}
+                                    <button type="submit" name="accion" value="inhabilitar" class="btn btn-outline-warning w-50">Inhabilitar Preinscripción Asistente</button>
+                                {% endif %}
+                                </form>
+                                <p class="mt-2 text-muted small">Controla el registro anticipado de asistentes.</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de posiciones -->
+                        <div class="accordion-item p-3">
+
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCalificaciones">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>📑 Tabla de posiciones</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            <div id="collapseCalificaciones" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                                <div class="accordion-body text-center">
+                                    <a href="{% url 'ver_calificaciones_admin' evento.id %}" class="btn btn-outline-success w-50">Ir a Tabla de posiciones</a>
+                                    <p class="mt-2 text-muted small">Consulta la clasificación de los participantes.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información Técnica -->
+                        <div class="accordion-item p-3">
+                            
+                            <h2 class="accordion-header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfoTecnica">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span>⚙️ Información Técnica</span>
+                                    <i class="bi bi-chevron-double-down"></i>
+                                </div>
+                            </h2>
+                            <div id="collapseInfoTecnica" class="accordion-collapse collapse" data-bs-parent="#accionesAccordion">
+                            <div class="accordion-body text-center">
+                                <a href="{% url 'ver_info_tecnica' evento.id %}" class="btn btn-outline-success w-50">Ir a Información Técnica</a>
+                                <p class="mt-2 text-muted small">Accede a documentación y detalles técnicos.</p>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+
+
+        <div class="row">
+            <div class="col-md-12 p-5">
+                <div class="text-center" style="margin-top: 20px;">
+                        {% if eventos|length < 4 %}
+                        
+                        <div class="d-flex flex-column align-items-center" >
+                            <a href="{% url 'crear_evento' %}" class="btn btn-outline-success">Crear Evento</a>
+                            <p class="pt-4">Solo puedes crear hasta 4 eventos.</p>
+                        </div>
+                    {% else %}
+                        <p>Has alcanzado el límite de eventos permitidos.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de soporte -->
+    <div>
+        {% include 'modal_soporte.html' %}
+    </div>
+    {% endblock %}
+
+</main>
+
+
+
+
+
+
+<!-- ########################################################################################################## -->
+
+    <footer class="footer-corporativo text-white py-4">
+        <div class="container">
+
+            <!-- Fila superior con enlaces -->
+            <div class="row justify-content-between text-center text-md-start mb-3">
+                <div class="col-md-12 d-flex flex-wrap justify-content-center  gap-3">
+                    <a href="#" class="footer-link">Contáctanos</a>
+                    <a href="#" class="footer-link">Preguntas frecuentes</a>
+                    <a href="#" class="footer-link">Aviso de privacidad</a>
+                    <a href="#" class="footer-link">Aviso de cookies</a>
+                    <a href="#" class="footer-link">Aviso Legal</a>
+                    <a href="#" class="footer-link">
+                        <img src="{% static 'img/flag_Colombia.png' %}" alt="País" width="20" class="me-1"> País (COL)
+                    </a>
+                </div>
+            </div>
+
+            <!-- Fila inferior: logo y texto legal -->
+            <div class="row align-items-center text-center text-md-start">
+                
+                <div class="col-md-11">
+                    <p class="mb-1 small">
+                        Este sitio web está dirigido exclusivamente a usuarios interesados en eventos educativos registrados en Event-Soft.
+                    </p>
+                    <small>&copy; <span id="year"></span> Event-Soft. Todos los derechos reservados.</small>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+
+<!-- ########################################################################################################## -->
+
+    <script src="{% static 'js/obtener_tiempo.js' %}"></script>
+ 
+
+    <script src="{% static 'js/alerta_time_desaparece.js' %}"></script>
+    <script src="{% static 'js/efecto_imagen.js' %}"></script>
+    <script src="{% static 'js/cancelacion.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+
+
+    
+    
+    
+</body>
+</html>
+
+
+
+

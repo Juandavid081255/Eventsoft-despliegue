@@ -1,0 +1,163 @@
+{% extends 'dashboard_principal_admin.html' %}
+{% load static %}
+
+{% block title %}Estadísticas del Evento{% endblock %}
+
+{% block content %}
+<style>
+    .chart-container {
+        position: relative;
+        max-width: 600px;
+        max-height: 400px;
+        margin: 0 auto;
+    }
+    .chartjs-size-monitor {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        visibility: hidden;
+        z-index: -1;
+    }
+    .chartjs-render-monitor {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: -1;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center contenedor">Estadísticas del Evento: {{ evento.eve_nombre }}</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Cupos del Evento</h3>
+            <canvas id="cuposChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <h3>Participantes</h3>
+            <canvas id="participantesChart"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h3>Asistentes</h3>
+            <canvas id="asistentesChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <h3>Resumen</h3>
+            <ul>
+                <li>Cupos Totales: {{ cupos_totales }}</li>
+                <li>Cupos Ocupados: {{ cupos_ocupados }}</li>
+                <li>Cupos Disponibles: {{ cupos_disponibles }}</li>
+                <li>Porcentaje de Ocupación: {{ porcentaje_ocupacion }}%</li>
+                <li>Total Participantes: {{ total_participantes }}</li>
+                <li>Aprobados: {{ aprobados_participantes }}</li>
+                <li>Rechazados: {{ rechazados_participantes }}</li>
+                <li>Pendientes: {{ pendientes_participantes }}</li>
+                <li>Total Asistentes: {{ total_asistentes }}</li>
+                <li>Aprobados: {{ aprobados_asistentes }}</li>
+                <li>Rechazados: {{ rechazados_asistentes }}</li>
+                <li>Pendientes: {{ pendientes_asistentes }}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="text-start pt-5">
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary m-1">Volver al Inicio</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Gráfico de Cupos
+        const ctxCupos = document.getElementById('cuposChart').getContext('2d');
+        const cuposChart = new Chart(ctxCupos, {
+            type: 'doughnut',
+            data: {
+                labels: ['Cupos Ocupados', 'Cupos Disponibles'],
+                datasets: [{
+                    data: [{{ cupos_ocupados }}, {{ cupos_disponibles }}],
+                    backgroundColor: ['#ff6384', '#36a2eb'],
+                    hoverBackgroundColor: ['#ff6384', '#36a2eb']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Cupos del Evento'
+                    }
+                }
+            },
+        });
+
+        // Gráfico de Participantes
+        const ctxParticipantes = document.getElementById('participantesChart').getContext('2d');
+        const participantesChart = new Chart(ctxParticipantes, {
+            type: 'bar',
+            data: {
+                labels: ['Aprobados', 'Rechazados', 'Pendientes'],
+                datasets: [{
+                    label: 'Participantes',
+                    data: [{{ aprobados_participantes }}, {{ rechazados_participantes }}, {{ pendientes_participantes }}],
+                    backgroundColor: ['#4bc0c0', '#ff6384', '#ffce56'],
+                    borderColor: ['#4bc0c0', '#ff6384', '#ffce56'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Participantes del Evento'
+                    }
+                }
+            },
+        });
+
+        // Gráfico de Asistentes
+        const ctxAsistentes = document.getElementById('asistentesChart').getContext('2d');
+        const asistentesChart = new Chart(ctxAsistentes, {
+            type: 'pie',
+            data: {
+                labels: ['Aprobados', 'Rechazados', 'Pendientes'],
+                datasets: [{
+                    data: [{{ aprobados_asistentes }}, {{ rechazados_asistentes }}, {{ pendientes_asistentes }}],
+                    backgroundColor: ['#4bc0c0', '#ff6384', '#ffce56'],
+                    hoverBackgroundColor: ['#4bc0c0', '#ff6384', '#ffce56']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Asistentes del Evento'
+                    }
+                }
+            },
+        });
+    });
+</script>
+{% endblock %}
+

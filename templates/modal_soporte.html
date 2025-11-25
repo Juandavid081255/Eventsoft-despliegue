@@ -1,0 +1,100 @@
+<!-- soporte modal -->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <title>Soporte</title>
+</head>
+<body>
+    
+</body>
+</html>
+<div class="text-end mb-3">
+  <button type="button" class="btn btn-success soporte-flotante" data-bs-toggle="modal" data-bs-target="#soporteModal">
+    <i class="fas fa-life-ring"></i> Soporte
+  </button>
+</div>
+
+<!-- soporte modal -->
+<div class="modal fade" id="soporteModal" tabindex="-1" aria-labelledby="soporteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="#" enctype="multipart/form-data" id="soporteForm">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="soporteModalLabel">Solicitar Soporte</h5>
+        </div>
+
+        <div class="modal-body">
+          <!-- Si quieres autocompletar nombre/email desde request.user -->
+          <div class="mb-2">
+            <label for="id_nombre" class="form-label">Nombre</label>
+            <input type="text" id="id_nombre" name="nombre" class="form-control" value="{{ request.user.get_full_name }}" {% if not request.user.is_authenticated %}required{% endif %}>
+          </div>
+
+          <div class="mb-2">
+            <label for="id_email" class="form-label">Correo electrónico</label>
+            <input type="email" id="id_email" name="email" class="form-control" value="{{ request.user.email }}" required>
+          </div>
+
+          <div class="mb-2">
+            <label for="id_asunto" class="form-label">Asunto</label>
+            <input type="text" id="id_asunto" name="asunto" class="form-control" maxlength="150" required>
+          </div>
+
+          <div class="mb-2">
+            <label for="id_mensaje" class="form-label">Mensaje</label>
+            <textarea id="id_mensaje" name="mensaje" class="form-control" rows="4" maxlength="2000" required></textarea>
+          </div>
+
+          <div class="mb-2">
+            <label for="id_archivo" class="form-label">Adjuntar archivo (opcional)</label>
+            <input type="file" id="id_archivo" name="archivo" class="form-control" accept=".png,.jpg,.jpeg,.pdf,.doc,.docx,.zip">
+            <small class="form-text text-muted">Máx. 8 MB. Tipos permitidos: png, jpg, jpeg, pdf, doc, docx, zip.</small>
+          </div>
+
+          <!-- lugar para mensajes de error/success generados por JS -->
+          <div id="soporteFeedback" class="mt-2"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="fas fa-paper-plane"></i> Enviar solicitud
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Script opcional: mejora UX (requiere Bootstrap 5 + jQuery no necesario) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('soporteForm');
+  const feedback = document.getElementById('soporteFeedback');
+
+  form.addEventListener('submit', function(e) {
+    // UX: mostrar mensaje de envío y deshabilitar botón para evitar envíos dobles
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+    // Si quieres enviar por AJAX, aquí podrías interceptar y hacer fetch().
+    // Para comportamiento clásico (submit normal), no cancelar el evento.
+    // Si usas AJAX, recuerda manejar CSRF token.
+  });
+
+  // Si usas envío por AJAX, al recibir respuesta exitosa:
+  // 1) cerrar modal: bootstrap Modal instance required
+  // 2) reset() del formulario y mostrar mensaje de éxito
+  // Ejemplo (si empleas fetch -> no incluído aquí por simplicidad)
+});
+</script>

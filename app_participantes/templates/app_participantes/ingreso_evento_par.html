@@ -1,0 +1,59 @@
+{% extends 'dashboard_principal_participante.html' %}
+{% load static %}
+
+{% block title %}Acceso al evento{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor text-center mb-5">Acceso al evento {{ evento.eve_nombre|title }}</h2>
+
+    <div class="row justify-content-center">
+        <!-- CLAVE DE ACCESO -->
+        <div class="col-md-4 d-flex align-items-stretch">
+            <div class="caja-mv w-100 text-center shadow-sm p-5 mb-5">
+                {% if participante.par_eve_clave %}
+                    <h5 class="mb-3">Clave de acceso:</h5>
+                    <p class="border rounded p-4 bg-light fs-4">
+                        <strong>{{ participante.par_eve_clave }}</strong>
+                    </p>
+                    <p class="text-muted mt-5">En caso de que el QR no funcione por dicho motivo, puedes usar la clave de acceso para acceder al evento.</p>
+                {% else %}
+                    <p class="text-muted">No hay clave de acceso disponible.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- QR DE ACCESO -->
+        <div class="col-md-4 d-flex align-items-stretch">
+            <div class="caja-mv w-100 text-center shadow-sm p-5 mb-5">
+                {% if participante.par_eve_qr %}
+                    <h5 class="mb-3">QR de acceso:</h5>
+                    <img src="{{ participante.par_eve_qr.url }}" alt="QR acceso {{ evento.eve_nombre }}" class="img-fluid rounded mb-3" style="max-width: 200px; height: auto; margin: auto;">
+                    <a href="{{ participante.par_eve_qr.url }}" download class="btn btn-outline-info w-100">Descargar QR</a>
+                {% else %}
+                    <p class="text-muted">No hay QR disponible.</p>
+                {% endif %}
+            </div>
+        </div>
+        <!-- CANCELAR INSCRIPCIÓN -->
+        <div class="col-md-4 d-flex align-items-stretch">
+            <div class="card w-100 text-center shadow-sm p-5 mb-5">
+                <form action="{% url 'cancelar_inscripcion_participante' evento.id %}" method="post" class="w-100">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger w-100" 
+                            onclick="return confirm('¿Estás seguro de cancelar tu inscripción a este evento?');">
+                        Cancelar inscripción a este evento
+                    </button>
+                    <p class="text-muted mt-3">Al cancelar, perderás acceso a este evento y no tienes manera de recuperar el acceso.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-start mt-5">
+        <a href="{% url 'dashboard_participante' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+</div>
+
+{% endblock %}

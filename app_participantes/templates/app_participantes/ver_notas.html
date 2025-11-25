@@ -1,0 +1,49 @@
+{% extends 'dashboard_principal_participante.html' %}
+{% load static %}
+
+{% block title %}Notas Participante{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="contenedor">NOTA PARTICIPANTE</h2>
+
+    {% if participante %}
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="table-warning">
+                    <tr>
+                        <th>Puesto</th>
+                        <th>Nombre del Participante</th>
+                        <th>Calificación</th>
+                        <th>Ver Notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-success fw-bold">
+                        <td>
+                            {% if puesto_actual %}
+                                {{ puesto_actual }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ nombre_limpio }} {{ apellido_limpio }}</td>
+                        <td>{{ calificacion }}</td>
+                        <td>
+                            <a href="{% url 'ver_detalle_calificacion_par' evento.id  %}" class="btn btn-info btn-sm">
+                                Ver detalles
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Aún No has sido calificado por ningún Evaluador</p>
+    {% endif %}
+
+    <div class="text-start pt-4">
+        <a href="{% url 'dashboard_participante' %}" class="btn btn-secondary">Volver al Dashboard</a>
+    </div>
+</div>
+{% endblock %}

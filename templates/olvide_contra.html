@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olvide mi contraseña - Event-Soft</title>
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <div class="login-wrapper d-flex align-items-center justify-content-center">
+        <div class="login-card d-flex">   
+            
+            <!-- Imagen o logo con texto debajo -->
+            <div class="login-image col-md-6 d-none d-md-flex flex-column align-items-center justify-content-center" style="color: white;">
+                <img src="{% static 'img/favicon.png' %}" alt="Logo Event-Soft" class="mb-3" style="max-width: 500px;">
+                <h3 class="text-center">Event-Soft</h3>
+                <small>Gestión de eventos</small>
+            </div>
+
+            <!-- Formulario -->
+            <div class="login-box col-md-6 ">
+                <h5 class="text-muted text-center mb-3">¡Upps! Olvidé mi contraseña y deseo restablecerla.</h5>
+                <p>Te enviaremos a tu correo electrónico un enlace para restablecer tu contraseña.</p>
+
+                <form method="post" action="{% url 'reset_password' %}" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" class="form-control text-center" id="email_username" name="email_username"
+                        placeholder="Correo electrónico" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-block ">Enviar</button>
+                </form>
+
+                {% if error %}
+                    <div class="alert alert-danger mt-3 text-center" role="alert">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <div class="mt-3 text-center">
+                    <a href="{% url 'login_view' %}" class="btn btn-outline-success mt-5 w-100"><i class="bi bi-house-door"></i><strong> Iniciar sesión</strong></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

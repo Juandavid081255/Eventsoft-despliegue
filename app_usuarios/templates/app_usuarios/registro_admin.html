@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Administrador de Evento</title>
+    <style>
+        body {
+            margin-block: 400px;
+            padding: 0;
+            background: linear-gradient(135deg, #e9f5ff, #ffffff);
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            display: flex;
+            flex-wrap: wrap;
+            width: 800px;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .login-image {
+            background: linear-gradient(to bottom, #4cd137, #006400);
+            flex: 1 1 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .login-image img {
+            max-width: 80%;
+            max-height: 350px;
+        }
+
+        .login-box {
+            flex: 1 1 60%;
+            padding: 40px;
+            background-color: #d3d3d3;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 25px;
+        }
+
+        form {
+            text-align: left;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                flex-direction: column;
+                max-width: 90%;
+            }
+            .login-image {
+                padding: 20px;
+            }
+            .login-box {
+                padding: 30px 20px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+      <div class="login-image">
+            <img src="https://cdn-icons-png.flaticon.com/512/3593/3593985.png" alt="Registro">
+        </div>
+        
+        <div class="login-box">
+            <h2>Registro de Administrador de Evento</h2>
+            <p>Completa el formulario para solicitar tu acceso.</p>
+
+            {% if form.errors %}
+                <div class="alert">
+                    <strong>❌ Corrige los errores a continuación:</strong><br>
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="success">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-success">Enviar Solicitud</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
