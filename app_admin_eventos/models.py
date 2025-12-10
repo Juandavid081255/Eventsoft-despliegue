@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class Area(models.Model):
@@ -24,12 +25,32 @@ class Evento(models.Model):
     eve_fecha_inicio = models.DateField()
     eve_fecha_fin = models.DateField()
     eve_estado = models.CharField(max_length=45)
-    eve_imagen = models.ImageField(upload_to='upload/', verbose_name="Imagen/Logo del Evento")
+    
+    eve_imagen = CloudinaryField(
+        "imegen/Logo del evento",
+        folder="eventos/imagenes/",
+        resource_type="image",
+    )
     eve_administrador_fk = models.ForeignKey('app_usuarios.AdministradorEvento', on_delete=models.CASCADE)
     eve_tienecosto = models.CharField(max_length=45)
     eve_capacidad = models.IntegerField()
-    eve_programacion = models.FileField(upload_to='upload/', verbose_name="Archivo de Programación")
-    eve_informacion_tecnica = models.FileField(upload_to='upload/', null=True, blank=True, verbose_name="Información Técnica Opcional")
+
+
+    eve_programacion = CloudinaryField(
+        "Archivo de programacion",
+        folder="eventos/archivos/",
+        resource_type="raw",
+
+    )
+
+    eve_informacion_tecnica = CloudinaryField(
+        "Archivo de informacion tecnica",
+        folder="eventos/archivos/",
+        resource_type="raw",
+        blank=True,
+        null=True,
+    )
+    
     preinscripcion_habilitada_asistentes = models.BooleanField(default=False)
     preinscripcion_habilitada_participantes = models.BooleanField(default=False)
     preinscripcion_habilitada_evaluadores = models.BooleanField(default=False)
