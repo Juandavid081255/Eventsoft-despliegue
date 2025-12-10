@@ -19,7 +19,6 @@ class EventoForm(forms.ModelForm):
         label="Categorías"
     )
 
-
     eve_fecha_inicio = forms.DateField(
         widget=forms.DateInput(
             attrs={'type': 'date', 'class': 'form-control'},
@@ -43,7 +42,7 @@ class EventoForm(forms.ModelForm):
         fields = [
             'eve_nombre', 'eve_descripcion', 'eve_ciudad', 'eve_lugar', 'eve_fecha_inicio',
             'eve_fecha_fin', 'eve_estado', 'eve_imagen', 'eve_tienecosto',
-            'eve_capacidad', 'eve_programacion'
+            'eve_capacidad', 'eve_programacion', 'eve_informacion_tecnica'
         ]
         labels = {
             'eve_nombre': 'Título del evento',
@@ -57,6 +56,7 @@ class EventoForm(forms.ModelForm):
             'eve_tienecosto': '¿Tiene costo?',
             'eve_capacidad': 'Capacidad de personas',
             'eve_programacion': 'Archivo de programación',
+            'eve_informacion_tecnica': 'Información técnica (opcional)',
         }
         widgets = {
             'eve_nombre': forms.TextInput(attrs={'class': 'form-control'}),
@@ -66,29 +66,31 @@ class EventoForm(forms.ModelForm):
             'eve_fecha_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'eve_fecha_fin': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'eve_estado': forms.TextInput(attrs={'class': 'form-control'}),
-            'eve_imagen': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-            'eve_programacion': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            # ⚠️ CloudinaryField maneja su propio upload, no usar ClearableFileInput
+            'eve_imagen': forms.FileInput(attrs={'class': 'form-control-file', 'accept': 'image/*'}),
+            'eve_programacion': forms.FileInput(attrs={'class': 'form-control-file', 'accept': '.pdf,.doc,.docx,.xlsx,.xls'}),
+            'eve_informacion_tecnica': forms.FileInput(attrs={'class': 'form-control-file', 'accept': '.pdf,.doc,.docx,.xlsx,.xls'}),
             'eve_capacidad': forms.NumberInput(attrs={'class': 'form-control'}),
             'eve_tienecosto': forms.Select(attrs={'class': 'form-control'}),
         }
 
+    def clean(self):
+        """Validación del formulario"""
+        cleaned_data = super().clean()
+        fecha_inicio = cleaned_data.get('eve_fecha_inicio')
+        fecha_fin = cleaned_data.get('eve_fecha_fin')
+        hoy = timezone.now().date()
 
-        def clean(self):
-            cleaned_data = super().clean()
-            fecha_inicio = cleaned_data.get('eve_fecha_inicio')
-            fecha_fin = cleaned_data.get('eve_fecha_fin')
-            hoy = timezone.localdate()
+        if fecha_inicio and fecha_inicio < hoy:
+            self.add_error('eve_fecha_inicio', 'La fecha de inicio no puede ser anterior a hoy.')
 
-            if fecha_inicio and fecha_inicio < hoy:
-                self.add_error('eve_fecha_inicio', 'La fecha de inicio no puede ser anterior a hoy.')
+        if fecha_fin and fecha_fin < hoy:
+            self.add_error('eve_fecha_fin', 'La fecha de finalización no puede ser anterior a hoy.')
 
-            if fecha_fin and fecha_fin < hoy:
-                self.add_error('eve_fecha_fin', 'La fecha de finalización no puede ser anterior a hoy.')
+        if fecha_inicio and fecha_fin and fecha_fin < fecha_inicio:
+            self.add_error('eve_fecha_fin', 'La fecha de finalización no puede ser anterior a la fecha de inicio.')
 
-            if fecha_inicio and fecha_fin and fecha_fin < fecha_inicio:
-                self.add_error('eve_fecha_fin', 'La fecha de finalización no puede ser anterior a la fecha de inicio.')
-
-            return cleaned_data
+        return cleaned_data
 
 
 class EditarUsuarioAdministradorForm(forms.ModelForm):
@@ -101,10 +103,6 @@ class EditarUsuarioAdministradorForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese su apellido'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese su teléfono', 'type': 'number'}),
         }
-
-
-    
-
 
 
 class CategoriaForm(forms.ModelForm):
