@@ -50,7 +50,7 @@ class Evento(models.Model):
         blank=True,
         null=True,
     )
-    
+
     preinscripcion_habilitada_asistentes = models.BooleanField(default=False)
     preinscripcion_habilitada_participantes = models.BooleanField(default=False)
     preinscripcion_habilitada_evaluadores = models.BooleanField(default=False)
@@ -58,6 +58,40 @@ class Evento(models.Model):
 
     def __str__(self):
         return self.eve_nombre
+    
+
+    def get_programacion_url_inline(self):
+        """Retorna URL de Cloudinary para visualizar PDF en navegador"""
+        if self.eve_programacion:
+            return f"{self.eve_programacion.url}?fl_inline"
+        return None
+
+    def get_programacion_url_download(self):
+        """Retorna URL de Cloudinary para descargar PDF"""
+        if self.eve_programacion:
+            return f"{self.eve_programacion.url}?fl_attachment"
+        return None
+
+    def get_informacion_tecnica_url_inline(self):
+        """Retorna URL de Cloudinary para visualizar PDF técnico en navegador"""
+        if self.eve_informacion_tecnica:
+            return f"{self.eve_informacion_tecnica.url}?fl_inline"
+        return None
+
+    def get_informacion_tecnica_url_download(self):
+        """Retorna URL de Cloudinary para descargar PDF técnico"""
+        if self.eve_informacion_tecnica:
+            return f"{self.eve_informacion_tecnica.url}?fl_attachment"
+        return None
+
+    def tiene_programacion(self):
+        """Verifica si el evento tiene archivo de programación"""
+        return bool(self.eve_programacion)
+
+    def tiene_informacion_tecnica(self):
+        """Verifica si el evento tiene archivo de información técnica"""
+        return bool(self.eve_informacion_tecnica)
+   
 
 class EventoCategoria(models.Model):
     eve_cat_evento_fk = models.ForeignKey(Evento, on_delete=models.CASCADE)

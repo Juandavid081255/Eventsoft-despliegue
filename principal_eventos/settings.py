@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 import os
 import dj_database_url
 from decouple import config
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'cloudinary_storage',  # ← AGREGAR ESTO
+    'cloudinary',
     'app_usuarios.apps.AppUsuariosConfig',
     'anymail',
     'app_admin_eventos',
@@ -86,6 +91,21 @@ WSGI_APPLICATION = 'principal_eventos.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+)
+
+# Storage por defecto para archivos
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Configuración específica de Cloudinary Storage
+CLOUDINARY_STORAGE = {
+    'CLOUDINARY_URL': os.getenv('CLOUDINARY_URL'),
+}
+# -----
 
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600, ssl_require=not DEBUG)

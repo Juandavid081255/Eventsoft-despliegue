@@ -62,8 +62,26 @@
                             <br>
                             <div class="col-md-12 text-center">
                             {% if evento.eve_programacion %}
-                                <a href="{{ evento.eve_programacion.url }}" download target="_blank" class="btn btn-success mb-1 ">Descargar</a>
-                                <a href="{{ evento.eve_programacion.url }}" target="_blank" class="btn btn-success mb-1">Previsualizar programación</a>
+                                <a href="{{ evento.eve_programacion.url }}?fl_attachment" download target="_blank" class="btn btn-success mb-1 ">Descargar</a>
+                                <a href="{{ evento.eve_programacion.url }}?fl_inline" target="_blank" class="btn btn-success mb-1">Previsualizar programación</a>
+                            {% else %}
+                                No disponible
+                            {% endif %}
+                            </div>
+                        </div>
+                    </small>
+                    
+                    <small class=" text-center">
+                        <br>
+                        <br>
+                        <div class="row justify-content-center pb-4">
+                            <strong>Información Técnica:</strong>
+                            <br>
+                            <br>
+                            <div class="col-md-12 text-center">
+                            {% if evento.eve_informacion_tecnica %}
+                                <a href="{{ evento.eve_informacion_tecnica.url }}?fl_attachment" download target="_blank" class="btn btn-info mb-1 ">Descargar</a>
+                                <a href="{{ evento.eve_informacion_tecnica.url }}?fl_inline" target="_blank" class="btn btn-info mb-1">Previsualizar información técnica</a>
                             {% else %}
                                 No disponible
                             {% endif %}
