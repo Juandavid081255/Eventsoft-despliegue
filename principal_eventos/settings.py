@@ -3,6 +3,7 @@ from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 import os
 import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'app_usuarios.apps.AppUsuariosConfig',
+    'anymail',
     'app_admin_eventos',
     'app_asistentes',
     'app_participantes',
@@ -131,10 +133,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configuración de correo
-EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+
 
 
 #Colab #9
@@ -145,3 +144,22 @@ SITE_URL = os.getenv('SITE_URL')
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ----------------------------------------------------------------------
+# CORREO (Brevo o Gmail)
+# ----------------------------------------------------------------------
+USE_BREVO = config("USE_BREVO", default=False, cast=bool)
+
+if USE_BREVO:
+    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+    DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+    ANYMAIL = {"BREVO_API_KEY": config("BREVO_API_KEY")}
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+    DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+# ----------------------------------------------------------------------
